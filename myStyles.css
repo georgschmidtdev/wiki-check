@@ -43,7 +43,7 @@
 #searchForm input::placeholder{
     color: #ccc;
 }
-#searchForm button{
+#submitSearch{
     display: none;
 }
 

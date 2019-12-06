@@ -1,3 +1,5 @@
+import { DH_CHECK_P_NOT_PRIME } from "constants";
+
 /* Assign HTML body elements to variables*/
 let body = document.getElementsByTagName('body')[0];
 
@@ -7,8 +9,9 @@ body.insertAdjacentHTML('afterbegin',`
         <div id="searchForm">
             <form name="searchForm">
                 <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
-                <button type="submit">
+                <button id="submitSearch" type="submit"></button>
             </form>
+            <button id="selectionSearch" type="click"></button>
         </div>
         <div id="resultWrapper">
             <section id="searchResults"></section>
@@ -18,6 +21,32 @@ body.insertAdjacentHTML('afterbegin',`
 
 
 /* THE PART BELOW NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK*/
+
+let selection = "";
+
+document.addEventListener('selectionchange', () => {
+
+    selection = document.getSelection().toString();
+
+    console.log(selection);
+
+})
+
+
+let selectionSearch = document.getElementById("selectionSearch");
+
+selectionSearch.addEventListener("click", () => {
+
+fetchResults(selection);
+    
+});
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse){
+        console.log(sender.tab);
+
+    }
+)
 
 /* Assign search field to variable*/
 let form = document.getElementById('searchForm');
@@ -120,4 +149,8 @@ function displayError(message){
         <h3 class="errorMessage">${message}</h3>
 
     `);
+}
+
+function contextSearch(){
+    fetchResults(selection);
 }
