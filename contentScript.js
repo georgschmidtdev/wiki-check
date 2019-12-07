@@ -21,6 +21,7 @@ body.insertAdjacentHTML('afterbegin',`
 
 /* THE PART BELOW NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK*/
 
+/* Assigns currently selected Text to variable */
 let selection = "";
 
 document.addEventListener('selectionchange', () => {
@@ -31,22 +32,26 @@ document.addEventListener('selectionchange', () => {
 
 })
 
-
+/* Assign Button to variable for use with selected Text */
 let selectionSearch = document.getElementById("selectionSearch");
 
+/* Listen for click of button and search for selected Text */
 selectionSearch.addEventListener("click", () => {
 
 fetchResults(selection);
     
 });
 
+/* Listen for message from background script */
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse){
-        console.log(sender.tab ?
-            "from a content script:" + sender.tab.url:
-            "from the extension");
+
+        console.log(sender.tab);
+
+        /* Search for selected Text if message contains keyword */
         if(request.message == "contextSearch"){
-            sendResponse({farewell: "goodbye"});
+            sendResponse({message: "Context Menu search started"});
+
             fetchResults(selection);
         }
     }
@@ -143,6 +148,7 @@ function displayResults(results){
     });
 }
 
+/* Display error message on console */
 function displayError(message){
     let errorMessage = document.getElementById('searchResults');
 
@@ -155,6 +161,7 @@ function displayError(message){
     `);
 }
 
+/* Get Results from API for search with context menu */
 function contextSearch(){
     fetchResults(selection);
 }
