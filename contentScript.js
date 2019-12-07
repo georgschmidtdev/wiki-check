@@ -1,4 +1,3 @@
-import { DH_CHECK_P_NOT_PRIME } from "constants";
 
 /* Assign HTML body elements to variables*/
 let body = document.getElementsByTagName('body')[0];
@@ -43,8 +42,13 @@ fetchResults(selection);
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse){
-        console.log(sender.tab);
-
+        console.log(sender.tab ?
+            "from a content script:" + sender.tab.url:
+            "from the extension");
+        if(request.message == "contextSearch"){
+            sendResponse({farewell: "goodbye"});
+            fetchResults(selection);
+        }
     }
 )
 
