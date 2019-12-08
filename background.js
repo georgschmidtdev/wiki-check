@@ -1,12 +1,7 @@
 /* Create entry in context menu for chrome */
 chrome.runtime.onInstalled.addListener(function() {
 
-        chrome.contextMenus.create({
-            "id": "contextMenu",
-            "title": "Search on Wikipedia",
-            "contexts": ["selection"]
-        });
-
+        createContextMenu("Search on Wikipedia");
 });
 
 /* Listen for click of context menu */
@@ -28,6 +23,14 @@ chrome.contextMenus.onClicked.addListener(function(){
         console.log(tabId);    
     })    
 });
+
+function createContextMenu(title) {
+    chrome.contextMenus.create({
+        "id": "contextMenu",
+        "title": title,
+        "contexts": ["selection"]
+    });
+}
 
 /* Send message to content script */
 function sendMessage(tabId){
