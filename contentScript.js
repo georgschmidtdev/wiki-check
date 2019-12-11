@@ -1,21 +1,20 @@
-
-/* Assign HTML body elements to variables*/
+/* Listen for page to load, then create result wrapper*/
 let body = document.getElementsByTagName('body')[0];
 
 /* Insert searchbar on beginning of body element, followed by div to display results of search*/
 body.insertAdjacentHTML('afterbegin',`
-    <div id="wrapper">
-        <div id="searchForm">
-            <form name="searchForm">
-                <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
-                <button id="submitSearch" type="submit"></button>
-            </form>
-            <button id="selectionSearch" type="click"></button>
-        </div>
-        <div id="resultWrapper">
-            <section id="searchResults"></section>
-        </div>
+<div id="wrapper">
+    <div id="searchForm">
+        <form name="searchForm">
+            <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
+            <button id="submitSearch" type="submit"></button>
+        </form>
+        <button id="selectionSearch" type="click"></button>
     </div>
+    <div id="resultWrapper">
+        <section id="searchResults"></section>
+    </div>
+</div>
 `);
 
 
@@ -29,7 +28,6 @@ document.addEventListener('selectionchange', () => {
     selection = document.getSelection().toString();
 
     console.log(selection);
-
 })
 
 /* Assign Button to variable for use with selected Text */
@@ -38,22 +36,24 @@ let selectionSearch = document.getElementById("selectionSearch");
 /* Listen for click of button and search for selected Text */
 selectionSearch.addEventListener("click", () => {
 
-fetchResults(selection);
-    
+    fetchResults(selection);
 });
 
 /* Listen for message from background script */
 chrome.runtime.onMessage.addListener(
+
     function(request, sender, sendResponse){
 
         console.log(sender.tab);
 
         /* Search for selected Text if message contains keyword */
         if(request.message == "contextSearch"){
+            
             sendResponse({message: "Context Menu search started"});
 
             fetchResults(selection);
         }
+        return true;
     }
 )
 
@@ -81,6 +81,10 @@ function handleSubmit(event){
   fetchResults(searchQuery);
 }
 
+
+//--------------------------------------------------------------------------------
+// FUNCTIONS
+
 /* Get JSON file from Wikipedia*/
 function fetchResults(searchQuery){
     
@@ -98,10 +102,10 @@ function fetchResults(searchQuery){
         if(data.query.search.length != 0){
             
             /* Assign search results wihing JSON file to variable */
-        let results = data.query.search;
+            let results = data.query.search;
 
-        /* Call function to display results with results variable as argument*/
-        displayResults(results);
+            /* Call function to display results with results variable as argument*/
+            displayResults(results);
 
         }else{
 
@@ -112,7 +116,6 @@ function fetchResults(searchQuery){
     })
     /* Show error message in console if fetch fails*/
     .catch(() => displayError('An error occurred'));
-
 }
 
 /* Output actual search results from JSON response*/
@@ -143,7 +146,6 @@ function displayResults(results){
                 <span class="resultSnippet">${result.snippet}</span><br>
                 <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
             </div><br>
-
         `);
     });
 }
@@ -156,8 +158,7 @@ function displayError(message){
 
     errorMessage.insertAdjacentHTML('beforeend',`
 
-        <h3 class="errorMessage">${message}</h3>
-
+        <h3 class="errorMessage">${message}</h3> 
     `);
 }
 
@@ -165,3 +166,5 @@ function displayError(message){
 function contextSearch(){
     fetchResults(selection);
 }
+
+module.exports = contentScript;
