@@ -9,8 +9,8 @@ body.insertAdjacentHTML('afterbegin',`
             <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
             <button id="submitSearch" type="submit"></button>
         </form>
-        <button id="selectionSearch" type="click"></button>
     </div>
+    <button id="clearSearch" type="click">&#10006</button>
     <div id="resultWrapper">
         <section id="searchResults"></section>
     </div>
@@ -31,12 +31,16 @@ document.addEventListener('selectionchange', () => {
 })
 
 /* Assign Button to variable for use with selected Text */
-let selectionSearch = document.getElementById("selectionSearch");
+let clearSearch = document.getElementById("clearSearch");
 
 /* Listen for click of button and search for selected Text */
-selectionSearch.addEventListener("click", () => {
+clearSearch.addEventListener("click", () => {
 
-    fetchResults(selection);
+    /* Assign div for results to variable*/
+    let searchResults = document.getElementById('searchResults');
+
+    /* Clear content of div before displaying results*/
+    searchResults.innerHTML = '';
 });
 
 /* Listen for message from background script */
