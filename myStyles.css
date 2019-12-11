@@ -1,44 +1,37 @@
-#searchForm, #resultWrapper{
-    box-sizing: border-box;
-    font-family: Roboto, sans-serif;
-}
 #wrapper{
-    width: 20vw;
-    max-height: 40vh;
+    width: 25%;
+    max-height: 100vh;
 
     position: fixed;
     bottom: 0;
     right: 0;
 
-    margin: 2vh;
-
+    border-top: 1px solid rgb(200, 200, 200);
+    border-left: 1px solid rgb(200, 200, 200);
     background-color: white;
-    border-style: solid;
-    border-width: 3px;
-    border-color: #f2f2f2;
-    border-radius: 5px;
-}
-#wrapper:hover{
-    box-shadow: 3px 3px 0px rgba(166, 166, 166, 0.5);
+
+    z-index: 9999;
 }
 
 /* SEARCH */
 #searchForm{
     width: 100%; 
     height: auto;
+    background-color: white;
 
 }
 #searchForm form, #searchForm input{
     width: 100%;
     height: auto;
 }
+
 #searchForm input{
+    margin: 0;
     padding: 0.5vh;
-    border-style: none;
-    border-bottom-style: solid;
-    border-width: 3px;
-    border-color: #f2f2f2;
+    border: none;
+    border-bottom: 1px solid rgb(200, 200, 200);
     color: #ccc;
+    background-color: white;
 }
 #searchForm input::placeholder{
     color: #ccc;
@@ -47,25 +40,53 @@
     display: none;
 }
 
+#selectionSearch {
+    display: none;
+}
+
 /* RESULTS */
 #resultWrapper{
     width: 100%;
-    max-height: 36vh;
+    max-height: 100vh;
     overflow: scroll;
+    box-sizing: border-box;
 }
-#resultWrapper a{
-    text-decoration: none;
-    color: #00e6b8;
-}
+
 #resultWrapper::-webkit-scrollbar{
     display: none;
 }
+
+#resultWrapper a{
+    font-family: Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.18em;
+    line-height: 100%;
+}
+
+#resultWrapper a:hover{
+    color: grey;
+}
+
+.resultSnippet {
+    font-family: Roboto, sans-serif;
+    font-size: 0.9em;
+    line-height: 100%;
+}
+
 #searchResults{
     margin: 2vh;
     word-wrap: break-word;
 }
-.resultLink{
-    font-size: x-small;
+
+#resultWrapper .resultLink{
+    font-size: .75em;
+    font-weight: 400;
+    line-height: 90%;
+    color: #000fe6;
+}
+
+.resultLink:hover{
+    color: grey;
 }
 .errorMessage{
     color: red;

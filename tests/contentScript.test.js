@@ -1,15 +1,12 @@
-const expect = require('chai').expect;
-const nock = require('nock');
+const { JSDOM, VirtualConsole } = require('jsdom')
 
-const fetchResults = require('../contentScript').fetchResults;
+describe('wikiCheck', () => {
+    let dom
+    beforeEach(async () => {
+        dom = await initDom('contentScript.js')
+    })
 
-describe('Fetch Wikipedia Data', () => {
-    beforeEach(() => {
-        nock('https://de.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=6&srsearch=hallo')
-        .reply(200, response);
-    });
-
-    it('List results by keyword', () => {
+    itWill('list results by keyword', () => {
         return fetchResults('hallo')
         .then(response => {
             expect(typeof response).to.equal('object');
@@ -18,3 +15,4 @@ describe('Fetch Wikipedia Data', () => {
         });
     });
 });
+

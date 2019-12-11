@@ -31,5 +31,11 @@
     "local-web-server": "^3.0.7",
     "mocha": "^6.2.2",
     "nock": "^11.7.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "./testHelpers/itWill.js",
+      "./testHelpers/initDom.js"
+    ]
   }
 }
