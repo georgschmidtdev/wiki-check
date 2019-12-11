@@ -1,3 +1,4 @@
+
 /* Assign HTML body elements to variables*/
 let body = document.getElementsByTagName('body')[0];
 
@@ -7,8 +8,9 @@ body.insertAdjacentHTML('afterbegin',`
         <div id="searchForm">
             <form name="searchForm">
                 <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
-                <button type="submit">
+                <button id="submitSearch" type="submit"></button>
             </form>
+            <button id="selectionSearch" type="click"></button>
         </div>
         <div id="resultWrapper">
             <section id="searchResults"></section>
@@ -18,6 +20,42 @@ body.insertAdjacentHTML('afterbegin',`
 
 
 /* THE PART BELOW NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK*/
+
+/* Assigns currently selected Text to variable */
+let selection = "";
+
+document.addEventListener('selectionchange', () => {
+
+    selection = document.getSelection().toString();
+
+    console.log(selection);
+
+})
+
+/* Assign Button to variable for use with selected Text */
+let selectionSearch = document.getElementById("selectionSearch");
+
+/* Listen for click of button and search for selected Text */
+selectionSearch.addEventListener("click", () => {
+
+fetchResults(selection);
+    
+});
+
+/* Listen for message from background script */
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse){
+
+        console.log(sender.tab);
+
+        /* Search for selected Text if message contains keyword */
+        if(request.message == "contextSearch"){
+            sendResponse({message: "Context Menu search started"});
+
+            fetchResults(selection);
+        }
+    }
+)
 
 /* Assign search field to variable*/
 let form = document.getElementById('searchForm');
@@ -110,6 +148,7 @@ function displayResults(results){
     });
 }
 
+/* Display error message on console */
 function displayError(message){
     let errorMessage = document.getElementById('searchResults');
 
@@ -120,4 +159,9 @@ function displayError(message){
         <h3 class="errorMessage">${message}</h3>
 
     `);
+}
+
+/* Get Results from API for search with context menu */
+function contextSearch(){
+    fetchResults(selection);
 }
