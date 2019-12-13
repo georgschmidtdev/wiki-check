@@ -85,6 +85,14 @@ function main(){
     });
 }
 
+/*Save article to watchlist */
+function saveArticle() {
+    let saveButton = document.getElementsByClassName('saveArticle');
+    saveButton.addEventListener('click',() => {
+        
+    })
+}
+
 /* Insert searchbar on beginning of body element, followed by div to display results of search*/
 function insertWrapper() {
 
@@ -163,7 +171,8 @@ function displayResults(results){
         
             <div class="resultItem>
                 <h2 class="resultTitle">
-                    <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
+                <button class="saveArticle" type="click">&#128190;</button>    
+                <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
                 </h2>
                 <span class="resultSnippet">${result.snippet}</span><br>
                 <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>

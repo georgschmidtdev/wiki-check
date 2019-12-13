@@ -77,6 +77,12 @@
     color: grey;
 }
 
+/*Checkbox save article*/
+.saveArticle{
+    width:30px;
+    height:30px;
+}
+
 .resultSnippet {
     font-family: Roboto, sans-serif;
     font-size: 0.9em;
