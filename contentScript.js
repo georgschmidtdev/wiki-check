@@ -1,28 +1,7 @@
-/* Listen for page to load, then create result wrapper*/
-let body = document.getElementsByTagName('body')[0];
-
-/* Insert searchbar on beginning of body element, followed by div to display results of search*/
-body.insertAdjacentHTML('afterbegin',`
-<div id="wrapper">
-    <div id="searchForm">
-        <form name="searchForm">
-            <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
-            <button id="submitSearch" type="submit"></button>
-        </form>
-    </div>
-    <button id="clearSearch" type="click">&#10006</button>
-    <div id="resultWrapper">
-        <section id="searchResults"></section>
-    </div>
-</div>
-`);
-
-
-/* THE PART BELOW NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK*/
-
-/* Assigns currently selected Text to variable */
+/* Declare variable for selected Text */
 let selection = "";
 
+/* Assigns currently selected Text to variable */
 document.addEventListener('selectionchange', () => {
 
     selection = document.getSelection().toString();
@@ -30,18 +9,6 @@ document.addEventListener('selectionchange', () => {
     console.log(selection);
 })
 
-/* Assign Button to variable for use with selected Text */
-let clearSearch = document.getElementById("clearSearch");
-
-/* Listen for click of button and search for selected Text */
-clearSearch.addEventListener("click", () => {
-
-    /* Assign div for results to variable*/
-    let searchResults = document.getElementById('searchResults');
-
-    /* Clear content of div before displaying results*/
-    searchResults.innerHTML = '';
-});
 
 /* Listen for message from background script */
 chrome.runtime.onMessage.addListener(
@@ -52,42 +19,93 @@ chrome.runtime.onMessage.addListener(
 
         /* Search for selected Text if message contains keyword */
         if(request.message == "contextSearch"){
+
+            console.log("hallo")
             
             sendResponse({message: "Context Menu search started"});
 
             fetchResults(selection);
+        }if(request.message == "insertWrapper"){
+
+            console.log("hey")
+
+            sendResponse({message: "Wrapper inserted"});
+
+            insertWrapper();
+            main();
         }
         return true;
     }
 )
 
-/* Assign search field to variable*/
-let form = document.getElementById('searchForm');
-
-/* Add event listener with function to run when submitting*/
-form.addEventListener('submit', handleSubmit);
-
-/* Callback function to submit event of search button*/
-function handleSubmit(event){
-
-  /* Prevent tab from reloading as default action on submit*/
-  event.preventDefault();
-
-  /* Store input of input field in variable*/
-  let searchInput = document.getElementById('searchFormInput').value;
-
-  /* Remove white space from input*/
-  let searchQuery = searchInput.trim();
-
-  console.log(searchQuery);
-
-  /* Call function to search Wikipedia for search input*/
-  fetchResults(searchQuery);
-}
-
 
 //--------------------------------------------------------------------------------
 // FUNCTIONS
+
+function main(){
+    /* THIS PART NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK*/
+
+
+    /* Assign search field to variable*/
+    let form = document.getElementById('searchForm');
+
+    /* Add event listener with function to run when submitting*/
+    form.addEventListener('submit', handleSubmit);
+
+
+    /* Callback function to submit event of search button*/
+    function handleSubmit(event){
+
+        /* Prevent tab from reloading as default action on submit*/
+        event.preventDefault();
+
+        /* Store input of input field in variable*/
+        let searchInput = document.getElementById('searchFormInput').value;
+
+        /* Remove white space from input*/
+        let searchQuery = searchInput.trim();
+
+        console.log(searchQuery);
+
+        /* Call function to search Wikipedia for search input*/
+        fetchResults(searchQuery);
+    }
+
+    /* Assign Button to variable for use with selected Text */
+    let clearSearch = document.getElementById("clearSearch");
+
+    /* Listen for click of button and search for selected Text */
+    clearSearch.addEventListener("click", () => {
+
+        /* Assign div for results to variable*/
+        let searchResults = document.getElementById('searchResults');
+
+        /* Clear content of div before displaying results*/
+        searchResults.innerHTML = '';
+    });
+}
+
+/* Insert searchbar on beginning of body element, followed by div to display results of search*/
+function insertWrapper() {
+
+    /* Listen for page to load, then create result wrapper*/
+    let body = document.getElementsByTagName('body')[0];
+    
+    body.insertAdjacentHTML('afterbegin', `
+    <div id="wrapper">
+        <div id="searchForm">
+            <form name="searchForm">
+                <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
+                <button id="submitSearch" type="submit"></button>
+            </form>
+        </div>
+        <button id="clearSearch" type="click">&#10006</button>
+        <div id="resultWrapper">
+            <section id="searchResults"></section>
+        </div>
+    </div>
+    `);
+}
 
 /* Get JSON file from Wikipedia*/
 function fetchResults(searchQuery){
@@ -164,11 +182,6 @@ function displayError(message){
 
         <h3 class="errorMessage">${message}</h3> 
     `);
-}
-
-/* Get Results from API for search with context menu */
-function contextSearch(){
-    fetchResults(selection);
 }
 
 module.exports = contentScript;

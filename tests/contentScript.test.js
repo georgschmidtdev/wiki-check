@@ -1,18 +1,12 @@
-const { JSDOM, VirtualConsole } = require('jsdom')
+const insertWrapper = require('../contentScript');
 
-describe('wikiCheck', () => {
-    let dom
-    beforeEach(async () => {
-        dom = await initDom('contentScript.js')
+describe('insertWrapper', () => {
+
+    it('should insert HTML Wrapper into website', () =>{
+
+        insertWrapper();
+        let wrapper = document.getElementById('wrapper');
+
+        expect(wrapper).toBeDefined;
     })
-
-    itWill('list results by keyword', () => {
-        return fetchResults('hallo')
-        .then(response => {
-            expect(typeof response).to.equal('object');
-
-            expect(response.query.search.length).to.equal(6)
-        });
-    });
-});
-
+})
