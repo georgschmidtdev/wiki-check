@@ -39,6 +39,7 @@ chrome.runtime.onMessage.addListener(
 )
 
 
+
 //--------------------------------------------------------------------------------
 // FUNCTIONS
 
@@ -87,10 +88,16 @@ function main(){
 
 /*Save article to watchlist */
 function saveArticle() {
-    let saveButton = document.getElementsByClassName('saveArticle');
-    saveButton.addEventListener('click',() => {
-        
-    })
+    let saveButton = document.querySelectorAll('.saveArticle');
+    
+    let value = "testmessage";
+    saveButton.addEventListener("click",() => {
+        chrome.storage.sync.set({key: value}, function(){
+            chrome.storage.sync.get(['key'], function(result){
+                console.log(result.key);
+            });
+        });
+    });
 }
 
 /* Insert searchbar on beginning of body element, followed by div to display results of search*/
@@ -136,13 +143,12 @@ function fetchResults(searchQuery){
 
             /* Call function to display results with results variable as argument*/
             displayResults(results);
-
+            saveArticle();
         }else{
 
             /* Display error when no results were found*/
             displayError('No results found');
         }
-        
     })
     /* Show error message in console if fetch fails*/
     .catch(() => displayError('An error occurred'));
@@ -171,7 +177,7 @@ function displayResults(results){
         
             <div class="resultItem>
                 <h2 class="resultTitle">
-                <button class="saveArticle" type="click">&#128190;</button>    
+                <button class="saveArticle" name="testname" type="click">&#128190;</button>    
                 <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
                 </h2>
                 <span class="resultSnippet">${result.snippet}</span><br>
