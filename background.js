@@ -4,6 +4,20 @@ chrome.runtime.onInstalled.addListener(function() {
         createContextMenu("Search on Wikipedia");
 });
 
+chrome.webNavigation.onCompleted.addListener(function(){
+
+    let tabId;
+    tab = chrome.tabs.query({active: true, currentWindow: true}, function(tab){
+
+        /* Run function if variable "tab" is NOT null */
+        if(tab){
+            tabId = tab[0].id;
+
+            sendMessage(tabId, "insertWrapper");
+        }
+    })
+})
+
 /* Listen for click of context menu */
 chrome.contextMenus.onClicked.addListener(function(){
 
@@ -11,14 +25,15 @@ chrome.contextMenus.onClicked.addListener(function(){
 
     /* Assign currently active tab and its ID to variable  */
     let tabId;
-    let tab = chrome.tabs.query({active: true, currentWindow: true}, function(tab){
+    let tab;
+    tab = chrome.tabs.query({active: true, currentWindow: true}, function(tab){
 
         /* Run function if variable "tab" is NOT null */
         if(tab){
             console.log("written tab");
             tabId = tab[0].id;
 
-            sendMessage(tabId);
+            sendMessage(tabId, "contextSearch");
         }
         console.log(tabId);    
     })    
@@ -33,9 +48,10 @@ function createContextMenu(title) {
 }
 
 /* Send message to content script */
-function sendMessage(tabId){
+function sendMessage(tabId, type){
+    console.log(tabId, type);
     
-    chrome.tabs.sendMessage(tabId, {message: "contextSearch"}, function(response){
-        console.log(response.message);
+    chrome.tabs.sendMessage(tabId, {message: type}, function(response){
+        console.log(response);
     });
 }
