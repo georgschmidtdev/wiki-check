@@ -10,7 +10,6 @@ document.addEventListener('selectionchange', () => {
 })
 
 
-
 /* Listen for message from background script */
 chrome.runtime.onMessage.addListener(
 
@@ -183,11 +182,6 @@ function displayError(message){
 
         <h3 class="errorMessage">${message}</h3> 
     `);
-}
-
-/* Get Results from API for search with context menu */
-function contextSearch(){
-    fetchResults(selection);
 }
 
 module.exports = contentScript;

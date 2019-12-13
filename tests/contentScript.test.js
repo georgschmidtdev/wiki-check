@@ -1,7 +1,12 @@
-const fetchResults = require('../contentScript');
+const insertWrapper = require('../contentScript');
 
-describe('fetchResults', () => {
+describe('insertWrapper', () => {
 
-    
-    
+    it('should insert HTML Wrapper into website', () =>{
+
+        insertWrapper();
+        let wrapper = document.getElementById('wrapper');
+
+        expect(wrapper).toBeDefined;
+    })
 })
