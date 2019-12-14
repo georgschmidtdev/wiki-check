@@ -91,13 +91,17 @@ function saveArticle() {
     let saveButton = document.querySelectorAll('.saveArticle');
     
     let value = "testmessage";
-    saveButton.addEventListener("click",() => {
-        chrome.storage.sync.set({key: value}, function(){
-            chrome.storage.sync.get(['key'], function(result){
-                console.log(result.key);
-            });
-        });
-    });
+    console.log(saveButton);
+    saveButton.forEach(function(button){
+        button.addEventListener("click", () => {
+            console.log(value);
+            /*chrome.storage.sync.set({key: value}, function(){
+                chrome.storage.sync.get(['key'], function(result){
+                    console.log(result.key);
+                });
+            });*/
+        })
+    })
 }
 
 /* Insert searchbar on beginning of body element, followed by div to display results of search*/
@@ -142,8 +146,7 @@ function fetchResults(searchQuery){
             let results = data.query.search;
 
             /* Call function to display results with results variable as argument*/
-            displayResults(results);
-            saveArticle();
+            displayResults(results, saveArticle);
         }else{
 
             /* Display error when no results were found*/
@@ -155,7 +158,7 @@ function fetchResults(searchQuery){
 }
 
 /* Output actual search results from JSON response*/
-function displayResults(results){
+function displayResults(results, callback){
 
     /* Log results to console*/
     console.log(results);
@@ -185,6 +188,7 @@ function displayResults(results){
             </div><br>
         `);
     });
+    callback();
 }
 
 /* Display error message on console */
