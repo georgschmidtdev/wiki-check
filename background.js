@@ -3,9 +3,12 @@ chrome.runtime.onInstalled.addListener(function() {
     chrome.storage.sync.set({color: '#3aa757'}, function() {
       console.log('The color is green.');
     });
-    chrome.storage.sync.set({articles: []}, function(){
+
+    let watchlist = ["hello", "hi", "servus"];
+    chrome.storage.sync.set({watchlist:watchlist}, function(){
         console.log('Article watchlist created');
     })
+
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
         chrome.declarativeContent.onPageChanged.addRules([{
             conditions: [new chrome.declarativeContent.PageStateMatcher({

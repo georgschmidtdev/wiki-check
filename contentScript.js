@@ -176,11 +176,18 @@ function saveArticle() {
             let title = button.value;
 
             // Save buttons value in storage
-            chrome.storage.sync.set({'article': title}, function(){
-                console.log("Article saved");
-            });
+            chrome.storage.sync.get('watchlist', function(watchlist){
+                let newWatchlist;
+                newWatchlist = updateWatchlist(watchlist.watchlist, title);
+                
+            })
         });
     });
+}
+
+function updateWatchlist(watchlist, newEntry){
+    watchlist.push(newEntry);
+    return watchlist;
 }
 
 
