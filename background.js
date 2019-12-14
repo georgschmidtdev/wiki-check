@@ -1,9 +1,5 @@
 // Insert popup menu
 chrome.runtime.onInstalled.addListener(function() {
-    chrome.storage.sync.set({color: '#3aa757'}, function() {
-      console.log('The color is green.');
-    });
-
     let watchlist = ["hello", "hi", "servus"];
     chrome.storage.sync.set({watchlist:watchlist}, function(){
         console.log('Article watchlist created');

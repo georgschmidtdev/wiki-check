@@ -48,7 +48,7 @@ function insertWrapper() {
     let body = document.getElementsByTagName('body')[0];
     
     body.insertAdjacentHTML('afterbegin', `
-    <div id="wrapper">
+    <div id="wikiSearchWrapper">
         <div id="searchForm">
             <form name="searchForm">
                 <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
@@ -179,7 +179,9 @@ function saveArticle() {
             chrome.storage.sync.get('watchlist', function(watchlist){
                 let newWatchlist;
                 newWatchlist = updateWatchlist(watchlist.watchlist, title);
-                
+                chrome.storage.sync.set({watchlist: newWatchlist}, function(){
+                    console.log("Watchlist updated");
+                })
             })
         });
     });
