@@ -1,5 +1,3 @@
-const { receiveMessage } = require('./content_helpers')
-
 // Declare variable for selected Text
 let selection = "";
 
@@ -12,10 +10,11 @@ document.addEventListener('selectionchange', () => {
 })
 
 // Listen for message from background script
-chrome.runtime.onMessage.addListener(
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
-   receiveMessage()
-)
+    // Call function to handle reaction to message
+    receiveMessage(request, sender, sendResponse);
+})
 
 
 //--------------------------------------------------------------------------------
