@@ -1,8 +1,3 @@
-let body = document.getElementsByTagName('body');
-body.insertAdjacentHtml('afterbegin', `
-    <ul id="watchList"></ul>
-`);
-
 chrome.storage.onChanged.addListener(function(){
 
     let watchList = document.getElementById('watchList');
@@ -11,8 +6,11 @@ chrome.storage.onChanged.addListener(function(){
         let articleWatchlist;
         articleWatchlist = watchlist.watchlist;
         articleWatchlist.forEach(function(article){
+
+            console.log(article[0]);
+            debugger;
             
-            watchList.insertAdjacentHtml('afterbegin', `
+            watchList.insertAdjacentHTML('afterbegin', `
                 <li>
                     <a href="${article[1]}">${article[0]}</a>
                 </li>

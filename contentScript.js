@@ -5,8 +5,6 @@ let selection = "";
 document.addEventListener('selectionchange', () => {
 
     selection = document.getSelection().toString();
-
-    console.log(selection);
 })
 
 // Listen for message from background script
@@ -22,8 +20,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
 //Handle functionality after receiving message from background script
 function receiveMessage(request, sender, sendResponse){
-
-    console.log(sender);
 
     /* Search for selected Text if message contains keyword */
     if(request.message == "contextSearch"){
@@ -203,7 +199,6 @@ function setWatchlist(newWatchlist){
     });
 }
 
-
 // Display error message on console
 function displayError(message){
     let errorMessage = document.getElementById('searchResults');
@@ -216,4 +211,4 @@ function displayError(message){
     `);
 }
 
-module.exports = contentScript;
+//module.exports = contentScript;
