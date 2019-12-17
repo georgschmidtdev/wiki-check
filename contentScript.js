@@ -152,7 +152,7 @@ function displayResults(results, callback){
         
             <div class="resultItem>
                 <h2 class="resultTitle">
-                <button class="saveArticle" name="testname" type="click" value="${url}">&#128190;</button>    
+                <button class="saveArticle" name="${result.title}" type="click" value="${url}">&#128190;</button>    
                 <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
                 </h2>
                 <span class="resultSnippet">${result.snippet}</span><br>
@@ -173,23 +173,34 @@ function saveArticle() {
     saveButton.forEach(function(button){
 
         button.addEventListener("click", () => { 
-            let title = button.value;
 
-            // Save buttons value in storage
+            let title = button.name;
+            let url = button.value;
+
+            // Get current watchlist from storage
             chrome.storage.sync.get('watchlist', function(watchlist){
-                let newWatchlist;
-                newWatchlist = updateWatchlist(watchlist.watchlist, title);
-                chrome.storage.sync.set({watchlist: newWatchlist}, function(){
-                    console.log("Watchlist updated");
-                })
-            })
+
+                updateWatchlist(watchlist.watchlist, title, url);                    
+            });
         });
     });
 }
 
-function updateWatchlist(watchlist, newEntry){
+// Save buttons value and name as new entry in storage
+function updateWatchlist(watchlist, newEntryTitle, newEntryUrl){
+
+    let newEntry = [newEntryTitle, newEntryUrl];
     watchlist.push(newEntry);
-    return watchlist;
+    setWatchlist(watchlist);
+}
+
+// Set new array of articles to storage
+function setWatchlist(newWatchlist){
+    chrome.storage.sync.set({watchlist: newWatchlist}, function(){
+
+        console.log("Watchlist updated");
+        console.log(newWatchlist);
+    });
 }
 
 

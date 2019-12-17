@@ -1,8 +1,9 @@
 // Insert popup menu
 chrome.runtime.onInstalled.addListener(function() {
-    let watchlist = ["hello", "hi", "servus"];
+    let watchlist = [["Begrüßung", "hallo"], ["Verabschiedung", "Tschüss"], ["Begrüßung/Verabschiedung","servus"]];
     chrome.storage.sync.set({watchlist:watchlist}, function(){
         console.log('Article watchlist created');
+        console.log(watchlist[0][1]);
     })
 
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
