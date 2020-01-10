@@ -25,8 +25,7 @@
   "homepage": "https://github.com/georgschmidtdev/wiki-check#readme",
   "devDependencies": {
     "jest": "^24.9.0",
-    "jsdom": "^15.2.1",
-    "local-web-server": "^3.0.7"
+    "sinon-chrome": "^3.0.1"
   },
   "jest": {
     "setupFiles": [
