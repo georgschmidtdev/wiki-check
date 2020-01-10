@@ -31,14 +31,13 @@ function receiveMessage(request, sender, sendResponse){
 
         sendResponse({message: "Wrapper inserted"});
 
-        insertWrapper();
-        main();
+        insertWrapper(main);
     }
     return true;
 }
 
 // Insert searchbar on beginning of body element, followed by div to display results of search
-function insertWrapper() {
+function insertWrapper(callback) {
 
     // Listen for page to load, then create result wrapper
     let body = document.getElementsByTagName('body')[0];
@@ -57,6 +56,8 @@ function insertWrapper() {
         </div>
     </div>
     `);
+
+    callback();
 }
 
 function main(){
@@ -174,38 +175,43 @@ function saveArticle() {
             let url = button.value;
 
             // Get current watchlist from storage
-            chrome.storage.sync.get('watchlist', function(watchlist){
+            chrome.storage.sync.get('watchList', function(result){
 
-                updateWatchlist(watchlist.watchlist, title, url);                    
+                updateWatchlist(result.watchList, title, url);                    
             });
         });
     });
 }
 
-// Save buttons value and name as new entry in storage
-function updateWatchlist(watchlist, newEntryTitle, newEntryUrl){
+// Save buttons value and name as new object in storage
+function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl){
 
-    let newEntry = [newEntryTitle, newEntryUrl];
-    watchlist.push(newEntry);
-    setWatchlist(watchlist);
+    console.log(savedArticlesList);
+
+    let newEntry = {title: newEntryTitle, url: newEntryUrl};
+    savedArticlesList.push(newEntry);
+    setWatchlist(savedArticlesList);
 }
 
 // Set new array of articles to storage
 function setWatchlist(newWatchlist){
-    chrome.storage.sync.set({watchlist: newWatchlist}, function(){
 
-        console.log("Watchlist updated");
-        console.log(newWatchlist);
+    // Remove old watchlist from storage.sync
+    chrome.storage.sync.clear(function(){
+    });
+
+    // Set new array
+    chrome.storage.sync.set({watchList: newWatchlist}, function(){
     });
 }
 
 // Display error message on console
 function displayError(message){
-    let errorMessage = document.getElementById('searchResults');
+    let searchResults = document.getElementById('searchResults');
 
-    errorMessage.innerHTML = '';
+    searchResults.innerHTML = '';
 
-    errorMessage.insertAdjacentHTML('beforeend',`
+    searchResults.insertAdjacentHTML('beforeend',`
 
         <h3 class="errorMessage">${message}</h3> 
     `);
