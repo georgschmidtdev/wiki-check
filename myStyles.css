@@ -1,4 +1,4 @@
-#wrapper{
+#wikiSearchWrapper{
     min-width: 300px;
     width: 25%;
     max-height: 100vh;
@@ -75,6 +75,12 @@
 
 #resultWrapper a:hover{
     color: grey;
+}
+
+/*Checkbox save article*/
+.saveArticle{
+    width:30px;
+    height:30px;
 }
 
 .resultSnippet {
