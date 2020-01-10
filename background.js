@@ -1,15 +1,17 @@
 // Insert popup menu
 chrome.runtime.onInstalled.addListener(function() {
-    let watchlist = [["Begrüßung", "hallo"], ["Verabschiedung", "Tschüss"], ["Begrüßung/Verabschiedung","servus"]];
-    chrome.storage.sync.set({watchlist:watchlist}, function(){
+
+    // Create empty array and set to storage.sync
+    let savedArticlesList = [];
+    chrome.storage.sync.set({watchList: savedArticlesList}, function(){
         console.log('Article watchlist created');
-        console.log(watchlist[0][1]);
-    })
+        console.log(savedArticlesList);
+    });
 
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
         chrome.declarativeContent.onPageChanged.addRules([{
             conditions: [new chrome.declarativeContent.PageStateMatcher({
-                pageUrl: {hostEquals: 'developer.chrome.com'},
+                pageUrl: {hostEquals: 'goetzlisa.de'},
             })
         ],
             actions: [new chrome.declarativeContent.ShowPageAction()]
