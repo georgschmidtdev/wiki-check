@@ -14,6 +14,7 @@
     z-index: 9999;
 
     font-family: Roboto, sans-serif;
+    text-align: left;
 }
 
 /* SEARCH */
@@ -22,6 +23,7 @@
     height: auto;
     background-color: white;
     float: left;
+    font-family: Roboto, sans-serif;
 }
 #searchForm form, #searchForm input{
     width: 100%;
@@ -36,6 +38,7 @@
     color: #ccc;
     background-color: white;
     font-size: 1em;
+    font-family: Roboto, sans-serif;
 }
 #searchForm input::placeholder{
     color: #ccc;
@@ -48,10 +51,16 @@
     width: 10%;
     height: 30px;
     float: left;
+    font-family: Roboto, sans-serif;
     font-size: 1em;
+    color: black;
     background-color: white;
     border: none;
     border-bottom: 1px solid rgb(200, 200, 200);
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* RESULTS */
@@ -71,6 +80,9 @@
     font-weight: 600;
     font-size: 1.18em;
     line-height: 100%;
+    text-align: left;
+    color: black;
+    padding: 0;
 }
 
 #resultWrapper a:hover{
@@ -81,12 +93,23 @@
 .saveArticle{
     width:30px;
     height:30px;
+    background-color: #ccc;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2%;
+    border-radius: 2px;
+    font-size: 1em;
+}
+
+button.saveArticle:hover {
+    background-color: #999;
 }
 
 .resultSnippet {
     font-family: Roboto, sans-serif;
     font-size: 0.9em;
     line-height: 100%;
+    text-align: left;
 }
 
 #searchResults{
@@ -94,10 +117,10 @@
     word-wrap: break-word;
 }
 
-#resultWrapper .resultLink{
+#resultWrapper .resultLink {
     font-size: .75em;
     font-weight: 400;
-    line-height: 90%;
+    line-height: 50%;
     color: #000fe6;
 }
 
