@@ -16,7 +16,7 @@
     {
       "matches": ["https://*/*", "http://*/*", "file:///*:/*"],
       "js": ["contentScript.js"],
-      "css": ["myStyles.css"]
+      "css": ["myStyles.css", "popup.css"]
     }
   ],
 

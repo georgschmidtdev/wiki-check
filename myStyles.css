@@ -100,6 +100,8 @@
     margin-bottom: 2%;
     border-radius: 2px;
     font-size: 1em;
+    box-shadow: none;
+    border: none;
 }
 
 button.saveArticle:hover {
@@ -130,3 +132,6 @@ button.saveArticle:hover {
 .errorMessage{
     color: red;
 }
+
+
+
