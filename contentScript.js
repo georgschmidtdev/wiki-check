@@ -66,38 +66,43 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
+    let submitEvent = 'submit';
+
+    let clickEvent = 'click';
+
     // Add event listener with function to run when submitting
-    form.addEventListener('submit', handleSubmit);
-
-
-    // Callback function to submit event of search button
-    function handleSubmit(event){
-
-        // Prevent tab from reloading as default action on submit
-        event.preventDefault();
-
-        // Store input of input field in variable
-        let searchInput = document.getElementById('searchFormInput').value;
-
-        // Remove white space from input
-        let searchQuery = searchInput.trim();
-
-        // Call function to search Wikipedia for search input
-        fetchResults(searchQuery);
-    }
+    form.addEventListener(submitEvent, handleSubmit);
 
     // Assign Button to variable for use with selected Text
     let clearSearch = document.getElementById("clearSearch");
 
     // Listen for click of button and search for selected Text
-    clearSearch.addEventListener("click", () => {
+    clearSearch.addEventListener(clickEvent, clearResults);
+}
 
-        // Assign div for results to variable
-        let searchResults = document.getElementById('searchResults');
+// Callback function to submit event of search button
+function handleSubmit(event){
 
-        // Clear content of div before displaying results
-        searchResults.innerHTML = '';
-    });
+    // Prevent tab from reloading as default action on submit
+    event.preventDefault();
+
+    // Store input of input field in variable
+    let searchInput = document.getElementById('searchFormInput').value;
+
+    // Remove white space from input
+    let searchQuery = searchInput.trim();
+
+    // Call function to search Wikipedia for search input
+    fetchResults(searchQuery);
+}
+
+function clearResults() {
+    
+    // Assign div for results to variable
+    let searchResults = document.getElementById('searchResults');
+
+    // Clear content of div before displaying results
+    searchResults.innerHTML = '';
 }
 
 // Get JSON file from Wikipedia
@@ -217,4 +222,16 @@ function displayError(message){
     `);
 }
 
-//module.exports = contentScript;
+module.exports = {
+    receiveMessage: receiveMessage,
+    insertWrapper: insertWrapper,
+    main: main,
+    handleSubmit: handleSubmit,
+    clearResults: clearResults,
+    fetchResults: fetchResults,
+    displayResults: displayResults,
+    saveArticle: saveArticle,
+    updateWatchlist: updateWatchlist,
+    setWatchlist: setWatchlist,
+    displayError: displayError
+}
