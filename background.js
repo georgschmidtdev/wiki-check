@@ -68,5 +68,6 @@ function createContextMenu(title) {
 // Send message to content script
 function sendMessage(tabId, type){
     
-    chrome.tabs.sendMessage(tabId, {message: type});
+    chrome.tabs.sendMessage(tabId, {message: type}, function(response){
+    });
 }
