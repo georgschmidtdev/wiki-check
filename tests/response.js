@@ -1,4 +1,4 @@
-module.exports = {
+response = {
     "batchcomplete": "",
     "continue":
     {
@@ -67,4 +67,8 @@ module.exports = {
             }
         ]
     }
+}
+
+module.exports = {
+    response: response
 }
