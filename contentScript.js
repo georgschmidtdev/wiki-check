@@ -8,10 +8,10 @@ document.addEventListener('selectionchange', () => {
 })
 
 // Listen for message from background script
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+chrome.runtime.onMessage.addListener(function(request){
 
     // Call function to handle reaction to message
-    receiveMessage(request, sender, sendResponse);
+    receiveMessage(request, fetchResults, insertWrapper);
 })
 
 
@@ -19,19 +19,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 // FUNCTIONS
 
 //Handle functionality after receiving message from background script
-function receiveMessage(request, sender, sendResponse){
+function receiveMessage(request, fetchCallback, wrapperCallback){
 
     /* Search for selected Text if message contains keyword */
     if(request.message == "contextSearch"){
         
-        sendResponse({message: "Context Menu search started"});
-
-        fetchResults(selection);
+        fetchCallback(selection);
     }if(request.message == "insertWrapper"){
 
-        sendResponse({message: "Wrapper inserted"});
-
-        insertWrapper(main);
+        wrapperCallback(main);
     }
     return true;
 }
@@ -66,42 +62,47 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
+    let submitEvent = 'submit';
+
+    let clickEvent = 'click';
+
     // Add event listener with function to run when submitting
-    form.addEventListener('submit', handleSubmit);
-
-
-    // Callback function to submit event of search button
-    function handleSubmit(event){
-
-        // Prevent tab from reloading as default action on submit
-        event.preventDefault();
-
-        // Store input of input field in variable
-        let searchInput = document.getElementById('searchFormInput').value;
-
-        // Remove white space from input
-        let searchQuery = searchInput.trim();
-
-        // Call function to search Wikipedia for search input
-        fetchResults(searchQuery);
-    }
+    form.addEventListener(submitEvent, handleSubmit);
 
     // Assign Button to variable for use with selected Text
     let clearSearch = document.getElementById("clearSearch");
 
     // Listen for click of button and search for selected Text
-    clearSearch.addEventListener("click", () => {
+    clearSearch.addEventListener(clickEvent, clearResults);
+}
 
-        // Assign div for results to variable
-        let searchResults = document.getElementById('searchResults');
+// Callback function to submit event of search button
+function handleSubmit(event){
 
-        // Clear content of div before displaying results
-        searchResults.innerHTML = '';
-    });
+    // Prevent tab from reloading as default action on submit
+    event.preventDefault();
+
+    // Store input of input field in variable
+    let searchInput = document.getElementById('searchFormInput').value;
+
+    // Remove white space from input
+    let searchQuery = searchInput.trim();
+
+    // Call function to search Wikipedia for search input
+    fetchResults(searchQuery, displayResults, displayError);
+}
+
+function clearResults() {
+    
+    // Assign div for results to variable
+    let searchResults = document.getElementById('searchResults');
+
+    // Clear content of div before displaying results
+    searchResults.innerHTML = '';
 }
 
 // Get JSON file from Wikipedia
-function fetchResults(searchQuery){
+function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError){
     
     // Limit number of results with "limit=<numberOfResults>&srsearch"
     let endpoint = `https://de.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=6&srsearch=${searchQuery}`;
@@ -118,11 +119,11 @@ function fetchResults(searchQuery){
             let results = data.query.search;
 
             // Call function to display results with results variable as argument
-            displayResults(results, saveArticle);
+            callbackDisplayResults(results, insertResult, saveArticle);
         }else{
 
             // Display error when no results were found
-            displayError('No results found');
+            callbackDisplayError('No results found');
         }
     })
     // Show error message in console if fetch fails
@@ -130,7 +131,7 @@ function fetchResults(searchQuery){
 }
 
 // Output search results from JSON response
-function displayResults(results, callback){
+function displayResults(results, callbackInsertResult, callbackSaveArticle){
 
     // Assign div for results to variable
     let searchResults = document.getElementById('searchResults');
@@ -141,24 +142,30 @@ function displayResults(results, callback){
     // Loop over each result
     results.forEach(result => {
 
-        // Encode the title key of each result to get valid URL by turning spaces into %20
-        let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
-
-        // Insert HTML for each search result
-        searchResults.insertAdjacentHTML('beforeend',`
-        
-            <div class="resultItem>
-                <h2 class="resultTitle">
-                <button class="saveArticle" name="${result.title}" type="click" value="${url}">&#128190;</button>    
-                <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
-                </h2>
-                <span class="resultSnippet">${result.snippet}</span><br>
-                <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
-            </div><br>
-        `);
+        callbackInsertResult(result);
     });
-    callback();
+
+    callbackSaveArticle();
 }
+
+function insertResult(result){
+
+    // Encode the title key of each result to get valid URL by turning spaces into %20
+    let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
+
+    // Insert HTML for each search result
+    searchResults.innerHTML = `
+    
+        <div class="resultItem>
+            <h2 class="resultTitle">
+            <button class="saveArticle" name="${result.title}" type="click" value="${url}">&#128190;</button>    
+            <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
+            </h2>
+            <span class="resultSnippet">${result.snippet}</span><br>
+            <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
+        </div><br>
+    `;
+};
 
 // Save article to watchlist
 function saveArticle() {
@@ -217,4 +224,17 @@ function displayError(message){
     `);
 }
 
-//module.exports = contentScript;
+module.exports = {
+    receiveMessage: receiveMessage,
+    insertWrapper: insertWrapper,
+    main: main,
+    handleSubmit: handleSubmit,
+    clearResults: clearResults,
+    fetchResults: fetchResults,
+    displayResults: displayResults,
+    insertResult: insertResult,
+    saveArticle: saveArticle,
+    updateWatchlist: updateWatchlist,
+    setWatchlist: setWatchlist,
+    displayError: displayError
+}

@@ -26,11 +26,5 @@
   "devDependencies": {
     "jest": "^24.9.0",
     "sinon-chrome": "^3.0.1"
-  },
-  "jest": {
-    "setupFiles": [
-      "./testHelpers/itWill.js",
-      "./testHelpers/initDom.js"
-    ]
   }
 }
