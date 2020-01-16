@@ -223,15 +223,15 @@ function displayError(message){
 }
 
 module.exports = {
-    receiveMessage: receiveMessage,
-    insertWrapper: insertWrapper,
-    main: main,
-    handleSubmit: handleSubmit,
-    clearResults: clearResults,
-    fetchResults: fetchResults,
-    displayResults: displayResults,
-    saveArticle: saveArticle,
-    updateWatchlist: updateWatchlist,
-    setWatchlist: setWatchlist,
-    displayError: displayError
+    receiveMessage,
+    insertWrapper,
+    main,
+    handleSubmit,
+    clearResults,
+    fetchResults,
+    displayResults,
+    saveArticle,
+    updateWatchlist,
+    setWatchlist,
+    displayError
 }

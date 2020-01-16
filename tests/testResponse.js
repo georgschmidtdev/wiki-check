@@ -1,4 +1,4 @@
-response = {
+testResponse = {
     "batchcomplete": "",
     "continue":
     {
