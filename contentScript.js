@@ -189,33 +189,44 @@ function saveArticle() {
             // Get current watchlist from storage
             chrome.storage.sync.get('watchList', function(result){
 
-                updateWatchlist(result.watchList, title, url);                    
+                updateWatchlist(result.watchList, title, url, setWatchlist);                    
             });
         });
     });
-}
+};
 
 // Save buttons value and name as new object in storage
-function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl){
-
-    console.log(savedArticlesList);
+function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback){
 
     let newEntry = {title: newEntryTitle, url: newEntryUrl};
     savedArticlesList.push(newEntry);
-    setWatchlist(savedArticlesList);
-}
+    callback(savedArticlesList, manageStorage);
+};
 
 // Set new array of articles to storage
-function setWatchlist(newWatchlist){
+function setWatchlist(newWatchlist, callback){
 
     // Remove old watchlist from storage.sync
-    chrome.storage.sync.clear(function(){
-    });
+    callback('clear', newWatchlist);
 
     // Set new array
-    chrome.storage.sync.set({watchList: newWatchlist}, function(){
-    });
-}
+    callback('fill', newWatchlist);
+};
+
+function manageStorage(message, newWatchlist){
+
+    if(message == 'clear'){
+
+        chrome.storage.sync.clear(function(){});
+
+        return message;
+    }if(message == 'fill'){
+
+        chrome.storage.sync.set({watchList: newWatchlist}, function(){});
+
+        return message;
+    };
+};
 
 // Display error message on console
 function displayError(message){
@@ -242,5 +253,6 @@ module.exports = {
     saveArticle: saveArticle,
     updateWatchlist: updateWatchlist,
     setWatchlist: setWatchlist,
+    manageStorage: manageStorage,
     displayError: displayError
 }

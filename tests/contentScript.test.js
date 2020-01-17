@@ -1,15 +1,14 @@
-const chrome = require('sinon-chrome/extensions');
+let chrome = require('sinon-chrome/extensions');
 window.chrome = chrome;
+
+beforeEach(() => {
+
+    jest.resetModules();
+});
 
 describe('Function displayError', () => {
 
-    const displayError = require('../contentScript').displayError;
-
-    beforeAll(() => {
-
-        jest.resetModules();
-
-    });
+    const displayError = require('../contentScript').displayError;    
 
     document.body.innerHTML = `
     
@@ -47,6 +46,8 @@ describe('Function insertWrapper', () => {
         jest.resetModules();
 
     });
+
+    document = ``;
 
     document = `
 
@@ -113,6 +114,8 @@ describe('Function clearResults', () => {
 describe('Function main', () => {
 
     const main = require('../contentScript').main;
+
+    
 
     document.body.innerHTML = `
     
@@ -209,8 +212,6 @@ describe('Function receiveMesage', () => {
 
     sendResponse = jest.fn(message => message);
 
-
-
     it('should call fetchResults', () => {
 
         let selection = 'mocked selection'
@@ -244,7 +245,7 @@ describe('Function displayResults', () => {
                 <section id="searchResults"></section>
             </div>
             <div>
-                <section id="mockedList"></section>
+                <section id="mockList"></section>
             </div>
         </div>
     `;
@@ -353,5 +354,139 @@ describe('Function assignSaveButtons', () => {
         let result = assignSaveButtons();
 
         expect(result.length).toBe(rndInteger +1);
+    });
+});
+
+describe('Function updateWatchlist', () => {
+
+    const updateWatchlist = require('../contentScript').updateWatchlist;
+
+    const mockCallback = jest.fn().mockImplementation((list) => {
+
+        return list;
+    });
+
+    let newMockTitle = 'mockTitle';
+
+    let newMockUrl = 'www.mock.com';
+
+    it('should call setWatchlist', () => {
+
+        let mockList = [
+            {
+                title: 'First title',
+                url: 'www.first.com'
+            },
+            {
+                title: 'Second title#',
+                url: 'www.second.com'
+            }
+        ];
+
+        updateWatchlist(mockList, newMockTitle, newMockUrl, mockCallback);
+
+        expect(mockCallback).toHaveBeenCalled();
+    });
+});
+
+describe('Function setWatchlist', () => {
+
+    const setWatchlist = require('../contentScript').setWatchlist;
+
+    mockCallback = jest.fn().mockImplementation(() => {
+
+        return true;
+    });
+
+    it('should write new watchlist', () => {
+
+        let newWatchlist = [
+            {
+                title: 'First title',
+                url: 'www.first.com'
+            },
+            {
+                title: 'Second title',
+                url: 'www.second.com'
+            },
+            {
+                title: 'Third title',
+                url: 'www.third.com'
+            }
+        ];
+
+        setWatchlist(newWatchlist, mockCallback);
+
+        expect(mockCallback).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe('Function manageStorage', () => {
+
+    const manageStorage = require('../contentScript').manageStorage;
+
+    chrome.storage.sync.clear = jest.fn().mockImplementation(() => {
+
+        mockList = [];
+    });
+
+    chrome.storage.sync.set = jest.fn().mockImplementation((list) => {
+
+        mockList = list;
+    });
+
+    let emptyList = [];
+
+    let mockList = [
+        {
+            title: 'First title',
+            url: 'www.first.com'
+        },
+        {
+            title: 'Second title',
+            url: 'www.second.com'
+        }
+    ];
+
+    let newMockList = [
+        {
+            title: 'First title',
+            url: 'www.first.com'
+        },
+        {
+            title: 'Second title',
+            url: 'www.second.com'
+        },
+        {
+            title: 'Third title',
+            url: 'www.third.com'
+        }
+    ];
+
+    it('should clear storage list', () => {
+
+        clearMessage = 'clear';
+
+        manageStorage(clearMessage, newMockList);
+
+    });
+
+    it('should write new list to storage', () => {
+
+        let mockList = [
+            {
+                title: 'First title',
+                url: 'www.first.com'
+            },
+            {
+                title: 'Second title',
+                url: 'www.second.com'
+            }
+        ];
+
+        fillMessage = 'fill';
+
+        manageStorage(fillMessage, newMockList);
+
     });
 });
