@@ -4,7 +4,6 @@ chrome.storage.onChanged.addListener(function(){
     displayWatchList();
 });
 
-// Listen for click event on refresh button of watchList
 window.onload = displayWatchList();
 
 function displayWatchList(){
