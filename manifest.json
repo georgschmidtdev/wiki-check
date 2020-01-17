@@ -12,6 +12,13 @@
     "declarativeContent"
   ],
 
+  "icons":{
+    "16": "images/ant_eater16.png",
+    "32": "images/ant_eater32.png",
+    "48": "images/ant_eater48.png",
+    "128": "images/ant_eater128.png"
+  },
+
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*", "file:///*:/*"],
