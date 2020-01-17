@@ -291,3 +291,67 @@ describe('Function displayResults', () => {
 
     });
 });
+
+describe('Function insertResult', () => {
+
+    const insertResult = require('../contentScript').insertResult;
+
+    const mockResult = require('./response').response.data.query.search[0];
+
+    document.body.innerHTML = `
+    
+        <div id="wikiSearchWrapper">
+            <div id="searchForm">
+                <form name="searchForm">
+                    <input id="searchFormInput" type="search" name="search" placeholder="Search on Wikipedia">
+                    <button id="submitSearch" type="submit"></button>
+                </form>
+            </div>
+            <button id="clearSearch" type="click">&#10006</button>
+            <div id="resultWrapper">
+                <section id="searchResults"></section>
+            </div>
+        </div>
+    `;
+
+    let wrapper = document.getElementById('searchResults');
+
+    let mockUrl = encodeURI(`https://de.wikipedia.org/wiki/${mockResult.title}`);
+
+    it('should concatenate url with title of result', () => {
+
+        insertResult(mockResult, wrapper);
+
+        expect(wrapper.innerHTML).toMatch(new RegExp(mockUrl));
+    })
+
+});
+
+describe('Function assignSaveButtons', () => {
+
+    const assignSaveButtons = require('../contentScript').assignSaveButtons;
+
+    let rndInteger = Math.floor(Math.random() * 10) + 1;
+
+    it('should assign all buttons to saveButton object', () => {
+
+        document.body.innerHTML = `
+        
+        <section id="searchResults"></section>
+        `;
+
+        let wrapper = document.getElementById('searchResults');
+
+        for (let index = 0; index < rndInteger + 1; index++) {
+        
+            wrapper.insertAdjacentHTML('beforeend', `
+            
+            <button class="saveArticle" name="mockTitle" type="click" value="mockUrl">&#128190;</button>    
+            `);
+        };
+
+        let result = assignSaveButtons();
+
+        expect(result.length).toBe(rndInteger +1);
+    });
+});
