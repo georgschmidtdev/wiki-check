@@ -142,19 +142,19 @@ function displayResults(results, callbackInsertResult, callbackSaveArticle){
     // Loop over each result
     results.forEach(result => {
 
-        callbackInsertResult(result);
+        callbackInsertResult(result, searchResults);
     });
 
     callbackSaveArticle();
 }
 
-function insertResult(result){
+function insertResult(result, wrapper){
 
     // Encode the title key of each result to get valid URL by turning spaces into %20
     let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
 
     // Insert HTML for each search result
-    searchResults.innerHTML = `
+    wrapper.innerHTML = `
     
         <div class="resultItem>
             <h2 class="resultTitle">
@@ -167,11 +167,16 @@ function insertResult(result){
     `;
 };
 
+function assignSaveButtons(){
+
+    return (document.querySelectorAll('.saveArticle'));
+};
+
 // Save article to watchlist
 function saveArticle() {
 
     // Assign buttons in result wrapper to array
-    let saveButton = document.querySelectorAll('.saveArticle');
+    let saveButton = assignSaveButtons();
 
     // Listen for button click
     saveButton.forEach(function(button){
@@ -233,6 +238,7 @@ module.exports = {
     fetchResults: fetchResults,
     displayResults: displayResults,
     insertResult: insertResult,
+    assignSaveButtons: assignSaveButtons,
     saveArticle: saveArticle,
     updateWatchlist: updateWatchlist,
     setWatchlist: setWatchlist,
