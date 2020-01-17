@@ -36,3 +36,11 @@
  .watchListItems:hover a{
     color: #000fe6;
 }
+
+#watchList img{
+    width: 100px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 20px;
+    display: block;
+}
