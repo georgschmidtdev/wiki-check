@@ -4,8 +4,6 @@ chrome.runtime.onInstalled.addListener(function() {
     // Create empty array and set to storage.sync
     let savedArticlesList = [];
     chrome.storage.sync.set({watchList: savedArticlesList}, function(){
-        console.log('Article watchlist created');
-        console.log(savedArticlesList);
     });
 
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -35,8 +33,8 @@ chrome.webNavigation.onCompleted.addListener(function(){
             tabId = tab[0].id;
 
             sendMessage(tabId, "insertWrapper");
-        }
-    })
+        };
+    });
 });
 
 // Listen for click of context menu
@@ -52,8 +50,8 @@ chrome.contextMenus.onClicked.addListener(function(){
             tabId = tab[0].id;
 
             sendMessage(tabId, "contextSearch");
-        }
-    })    
+        };
+    }); 
 });
 
 // Create context menu functionality
@@ -63,10 +61,10 @@ function createContextMenu(title) {
         "title": title,
         "contexts": ["selection"]
     });
-}
+};
 
 // Send message to content script
 function sendMessage(tabId, type){
     
     chrome.tabs.sendMessage(tabId, {message: type});
-}
+};

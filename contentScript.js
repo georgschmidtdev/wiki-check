@@ -21,6 +21,7 @@ function receiveMessage(request, fetchCallback, wrapperCallback){
     if(request.message == "contextSearch"){
         
         fetchCallback(selection);
+
     }if(request.message == "insertWrapper"){
 
         wrapperCallback(main);
@@ -115,7 +116,7 @@ function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError)
             let results = data.query.search;
 
             // Call function to display results with results variable as argument
-            callbackDisplayResults(results, insertResult, saveArticle);
+            displayResults(results, insertResult, saveArticle);
         }else{
 
             // Display error when no results were found
@@ -245,7 +246,7 @@ function displayError(message){
 
         <h3 class="errorMessage">${message}</h3> 
     `);
-}
+};
 
 module.exports = {
     receiveMessage: receiveMessage,
@@ -262,4 +263,4 @@ module.exports = {
     setWatchlist: setWatchlist,
     manageStorage: manageStorage,
     displayError: displayError
-}
+};
