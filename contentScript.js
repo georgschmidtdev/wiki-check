@@ -207,26 +207,31 @@ function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback
 function setWatchlist(newWatchlist, callback){
 
     // Remove old watchlist from storage.sync
-    callback('clear', newWatchlist);
+    callback('clear', newWatchlist, testCallback);
 
     // Set new array
-    callback('fill', newWatchlist);
+    callback('fill', newWatchlist, testCallback);
 };
 
-function manageStorage(message, newWatchlist){
+function manageStorage(message, newWatchlist, callback){
 
     if(message == 'clear'){
 
         chrome.storage.sync.clear(function(){});
 
-        return message;
+        callback(message);
     }if(message == 'fill'){
 
         chrome.storage.sync.set({watchList: newWatchlist}, function(){});
 
-        return message;
+        callback(message);
     };
 };
+
+function testCallback(message){
+
+    return message;
+}
 
 // Display error message on console
 function displayError(message){

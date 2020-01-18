@@ -425,17 +425,20 @@ describe('Function manageStorage', () => {
 
     const manageStorage = require('../contentScript').manageStorage;
 
+    testCallback = jest.fn().mockImplementation((message) => {
+
+        return message;
+    });
+
     chrome.storage.sync.clear = jest.fn().mockImplementation(() => {
 
-        mockList = [];
+        return true;
     });
 
     chrome.storage.sync.set = jest.fn().mockImplementation((list) => {
 
-        mockList = list;
+        return true;
     });
-
-    let emptyList = [];
 
     let mockList = [
         {
@@ -467,26 +470,17 @@ describe('Function manageStorage', () => {
 
         clearMessage = 'clear';
 
-        manageStorage(clearMessage, newMockList);
+        manageStorage(clearMessage, newMockList, testCallback);
 
+        expect(testCallback).toHaveBeenCalledWith(clearMessage);
     });
 
     it('should write new list to storage', () => {
 
-        let mockList = [
-            {
-                title: 'First title',
-                url: 'www.first.com'
-            },
-            {
-                title: 'Second title',
-                url: 'www.second.com'
-            }
-        ];
-
         fillMessage = 'fill';
 
-        manageStorage(fillMessage, newMockList);
+        manageStorage(fillMessage, newMockList, testCallback);
 
+        expect(testCallback).toHaveBeenCalledWith(fillMessage);
     });
 });
