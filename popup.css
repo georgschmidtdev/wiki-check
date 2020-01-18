@@ -1,0 +1,46 @@
+/* WatchList -> in the "popup.html"-file */
+
+#watchListWrapper{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+} 
+
+#watchList{
+    min-width: 300px;
+    width: 25%;
+    padding: 5px;
+}
+
+#watchList h1{
+    font-family: Roboto, sans-serif;
+    font-size:18px;
+    margin:0;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.watchListItems{
+    padding-bottom: 5px;
+}
+
+ .watchListItems a{
+    padding:0;
+    text-decoration: none;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    color: black;
+    line-height: 120%;
+}
+
+ .watchListItems:hover a{
+    color: #000fe6;
+}
+
+#watchList img{
+    width: 100px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 20px;
+    display: block;
+}

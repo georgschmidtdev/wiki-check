@@ -4,13 +4,7 @@ chrome.storage.onChanged.addListener(function(){
     displayWatchList();
 });
 
-// Listen for click event on refresh button of watchList
-let refreshWatchList = document.getElementById('refreshWatchList');
-
-refreshWatchList.addEventListener("click", () => {
-
-    displayWatchList();
-});
+window.onload = displayWatchList();
 
 function displayWatchList(){
 
@@ -30,7 +24,7 @@ function displayWatchList(){
         console.log(articleWatchlist);
         
         watchListWrapper.insertAdjacentHTML('afterbegin', `
-            <li>
+            <li class="watchListItems">
                 <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
             </li>
         `);
