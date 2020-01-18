@@ -154,7 +154,7 @@ function insertResult(result, wrapper){
     let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
 
     // Insert HTML for each search result
-    wrapper.innerHTML = `
+    wrapper.insertAdjacentHTML('beforeend', `
     
         <div class="resultItem>
             <h2 class="resultTitle">
@@ -164,7 +164,7 @@ function insertResult(result, wrapper){
             <span class="resultSnippet">${result.snippet}</span><br>
             <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
         </div><br>
-    `;
+    `);
 };
 
 function assignSaveButtons(){
