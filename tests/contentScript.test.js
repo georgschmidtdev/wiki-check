@@ -328,6 +328,44 @@ describe('Function insertResult', () => {
 
 });
 
+describe('Function saveArticle', () => {
+
+    const saveArticle = require('../contentScript').saveArticle;
+
+    mockCbAssign = jest.fn().mockImplementation(() => {
+
+        document.body.innerHTML = `
+        
+        <section id="searchResults"></section>
+        `;
+
+        let wrapper = document.getElementById('searchResults');
+
+        for (let index = 0; index < rndInteger + 1; index++) {
+        
+            wrapper.insertAdjacentHTML('beforeend', `
+            
+            <button class="saveArticle" name="mockTitle" type="click" value="mockUrl">&#128190;</button>    
+            `);
+        };
+
+        return(document.querySelectorAll('.saveArticle'));
+    });
+
+    mockCbManage = jest.fn();
+
+    let rndInteger = Math.floor(Math.random() * 10) + 1;
+
+    it('should get array from callback function', () => {
+
+        saveArticle(mockCbAssign, mockCbManage);
+
+        expect(mockCbAssign).toHaveBeenCalled();
+
+        expect(mockCbManage).toHaveBeenCalled();
+    });
+});
+
 describe('Function assignSaveButtons', () => {
 
     const assignSaveButtons = require('../contentScript').assignSaveButtons;

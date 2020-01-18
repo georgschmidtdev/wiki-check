@@ -37,7 +37,7 @@ chrome.webNavigation.onCompleted.addListener(function(){
             sendMessage(tabId, "insertWrapper");
         }
     })
-})
+});
 
 // Listen for click of context menu
 chrome.contextMenus.onClicked.addListener(function(){

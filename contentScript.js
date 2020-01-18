@@ -5,18 +5,14 @@ let selection = "";
 document.addEventListener('selectionchange', () => {
 
     selection = document.getSelection().toString();
-})
+});
 
 // Listen for message from background script
 chrome.runtime.onMessage.addListener(function(request){
 
     // Call function to handle reaction to message
     receiveMessage(request, fetchResults, insertWrapper);
-})
-
-
-//--------------------------------------------------------------------------------
-// FUNCTIONS
+});
 
 //Handle functionality after receiving message from background script
 function receiveMessage(request, fetchCallback, wrapperCallback){
@@ -30,7 +26,7 @@ function receiveMessage(request, fetchCallback, wrapperCallback){
         wrapperCallback(main);
     }
     return true;
-}
+};
 
 // Insert searchbar on beginning of body element, followed by div to display results of search
 function insertWrapper(callback) {
@@ -54,7 +50,7 @@ function insertWrapper(callback) {
     `);
 
     callback();
-}
+};
 
 function main(){
     // THIS PART NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK
@@ -74,7 +70,7 @@ function main(){
 
     // Listen for click of button and search for selected Text
     clearSearch.addEventListener(clickEvent, clearResults);
-}
+};
 
 // Callback function to submit event of search button
 function handleSubmit(event){
@@ -90,7 +86,7 @@ function handleSubmit(event){
 
     // Call function to search Wikipedia for search input
     fetchResults(searchQuery, displayResults, displayError);
-}
+};
 
 function clearResults() {
     
@@ -99,7 +95,7 @@ function clearResults() {
 
     // Clear content of div before displaying results
     searchResults.innerHTML = '';
-}
+};
 
 // Get JSON file from Wikipedia
 function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError){
@@ -128,7 +124,7 @@ function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError)
     })
     // Show error message in console if fetch fails
     .catch(() => displayError('An error occurred'));
-}
+};
 
 // Output search results from JSON response
 function displayResults(results, callbackInsertResult, callbackSaveArticle){
@@ -145,8 +141,8 @@ function displayResults(results, callbackInsertResult, callbackSaveArticle){
         callbackInsertResult(result, searchResults);
     });
 
-    callbackSaveArticle();
-}
+    callbackSaveArticle(assignSaveButtons, manageStorage);
+};
 
 function insertResult(result, wrapper){
 
@@ -167,16 +163,13 @@ function insertResult(result, wrapper){
     `);
 };
 
-function assignSaveButtons(){
-
-    return (document.querySelectorAll('.saveArticle'));
-};
-
 // Save article to watchlist
-function saveArticle() {
+function saveArticle(callbackAssign, callbackManage) {
 
     // Assign buttons in result wrapper to array
-    let saveButton = assignSaveButtons();
+    let saveButton = callbackAssign();
+
+    let dummyList = [];
 
     // Listen for button click
     saveButton.forEach(function(button){
@@ -187,13 +180,16 @@ function saveArticle() {
             let url = button.value;
 
             // Get current watchlist from storage
-            chrome.storage.sync.get('watchList', function(result){
-
-                updateWatchlist(result.watchList, title, url, setWatchlist);                    
-            });
+            callbackManage('get', dummyList, updateWatchlist);
         });
     });
 };
+
+function assignSaveButtons(){
+
+    return (document.querySelectorAll('.saveArticle'));
+};
+
 
 // Save buttons value and name as new object in storage
 function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback){
@@ -225,13 +221,19 @@ function manageStorage(message, newWatchlist, callback){
         chrome.storage.sync.set({watchList: newWatchlist}, function(){});
 
         callback(message);
+    }if(message == 'get'){
+
+        chrome.storage.sync.get('watchList', function(result){
+
+            callback(result.watchList, title, url, setWatchlist);                    
+        });
     };
 };
 
 function testCallback(message){
 
     return message;
-}
+};
 
 // Display error message on console
 function displayError(message){
