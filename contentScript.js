@@ -142,7 +142,7 @@ function displayResults(results, callbackInsertResult, callbackSaveArticle){
         callbackInsertResult(result, searchResults);
     });
 
-    callbackSaveArticle(assignSaveButtons, manageStorage);
+    callbackSaveArticle(manageStorage);
 };
 
 function insertResult(result, wrapper){
@@ -165,10 +165,10 @@ function insertResult(result, wrapper){
 };
 
 // Save article to watchlist
-function saveArticle(callbackAssign, callbackManage) {
+function saveArticle(callbackManage) {
 
     // Assign buttons in result wrapper to array
-    let saveButton = callbackAssign();
+    let saveButton = document.querySelectorAll('.saveArticle')
 
     let dummyList = [];
 
@@ -181,60 +181,60 @@ function saveArticle(callbackAssign, callbackManage) {
             let url = button.value;
 
             // Get current watchlist from storage
-            callbackManage('get', dummyList, updateWatchlist);
+            callbackManage('get', title, url, dummyList, updateWatchlist);
         });
     });
 };
 
-function assignSaveButtons(){
-
-    return (document.querySelectorAll('.saveArticle'));
-};
-
-
-// Save buttons value and name as new object in storage
-function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback){
-
-    let newEntry = {title: newEntryTitle, url: newEntryUrl};
-    savedArticlesList.push(newEntry);
-    callback(savedArticlesList, manageStorage);
-};
-
-// Set new array of articles to storage
-function setWatchlist(newWatchlist, callback){
-
-    // Remove old watchlist from storage.sync
-    callback('clear', newWatchlist, testCallback);
-
-    // Set new array
-    callback('fill', newWatchlist, testCallback);
-};
-
-function manageStorage(message, newWatchlist, callback){
+function manageStorage(message, title, url, newWatchlist, callback){
 
     if(message == 'clear'){
 
-        chrome.storage.sync.clear(function(){});
+        chrome.storage.sync.clear(function(){
 
-        callback(message);
-    }if(message == 'fill'){
+            if(newWatchlist){
 
-        chrome.storage.sync.set({watchList: newWatchlist}, function(){});
-
-        callback(message);
+                chrome.storage.sync.set({watchList: newWatchlist}, function(){});
+            };
+        });
     }if(message == 'get'){
 
         chrome.storage.sync.get('watchList', function(result){
+
+            console.log('currently stored: ', result);
 
             callback(result.watchList, title, url, setWatchlist);                    
         });
     };
 };
 
-function testCallback(message){
+// Save buttons value and name as new object in storage
+function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback){
 
-    return message;
+    let newEntry = {title: newEntryTitle, url: newEntryUrl};
+
+    console.log('updateWatchlist new entry: ', newEntry);
+    console.log('updateWatchlist old list: ', savedArticlesList);
+    savedArticlesList.push(newEntry);
+
+    console.log('updateWatchlist new list: ', savedArticlesList);
+    callback(savedArticlesList, manageStorage);
 };
+
+// Set new array of articles to storage
+function setWatchlist(newWatchlist, callback){
+
+    console.log('setWatchlist newWatchlist: ', newWatchlist);
+    console.log(callback);
+
+    // Remove old watchlist from storage.sync
+    callback('clear', 'dummyTitle', 'dummyUrl', newWatchlist, callbackDummy);
+};
+
+function callbackDummy(){
+
+    return true;
+}
 
 // Display error message on console
 function displayError(message){
