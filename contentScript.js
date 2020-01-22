@@ -184,11 +184,11 @@ function assignSaveListeners(button, clearCallback){
         let newEntry = {
             title: button.name,
             url: button.value
-        }
+        };
 
         clearCallback(newEntry, updateStorage);
     });
-}
+};
 
 function clearStorage(newEntry, updateCallback){
 
