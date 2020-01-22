@@ -142,7 +142,8 @@ function displayResults(results, callbackInsertResult, callbackSaveArticle){
         callbackInsertResult(result, searchResults);
     });
 
-    callbackSaveArticle(manageStorage);
+    callbackSaveArticle(assignSaveButtons, assignSaveListeners);
+    console.log('called saveArticles');
 };
 
 function insertResult(result, wrapper){
@@ -164,77 +165,60 @@ function insertResult(result, wrapper){
     `);
 };
 
-// Save article to watchlist
-function saveArticle(callbackManage) {
+function saveArticle(assignButtonsCallback, listenerCallback){
 
-    // Assign buttons in result wrapper to array
-    let saveButton = document.querySelectorAll('.saveArticle')
+    let saveButtons = assignButtonsCallback();
 
-    let dummyList = [];
+    saveButtons.forEach(function(button){
 
-    // Listen for button click
-    saveButton.forEach(function(button){
-
-        button.addEventListener("click", () => { 
-
-            let title = button.name;
-            let url = button.value;
-
-            // Get current watchlist from storage
-            callbackManage('get', title, url, dummyList, updateWatchlist);
-        });
+        listenerCallback(button, clearStorage);
     });
 };
 
-function manageStorage(message, title, url, newWatchlist, callback){
+function assignSaveButtons(){
 
-    if(message == 'clear'){
+    let buttons = document.querySelectorAll('.saveArticle');
 
+    return(buttons);
+};
+
+function assignSaveListeners(button, clearCallback){
+
+    button.addEventListener('click', () => {
+
+        let newEntry = {
+            title: button.name,
+            url: button.value
+        }
+
+        clearCallback(newEntry, updateStorage);
+    });
+}
+
+function clearStorage(newEntry, updateCallback){
+
+    let oldWatchList;
+
+    chrome.storage.sync.get('watchList', function(result){
+
+        oldWatchList = result.watchList;       
+        
         chrome.storage.sync.clear(function(){
 
-            if(newWatchlist){
-
-                chrome.storage.sync.set({watchList: newWatchlist}, function(){});
-            };
-        });
-    }if(message == 'get'){
-
-        chrome.storage.sync.get('watchList', function(result){
-
-            console.log('currently stored: ', result);
-
-            callback(result.watchList, title, url, setWatchlist);                    
-        });
-    };
+            updateCallback(oldWatchList, newEntry);
+       });
+    });
 };
 
-// Save buttons value and name as new object in storage
-function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl, callback){
+function updateStorage(oldWatchList, newEntry){
 
-    let newEntry = {title: newEntryTitle, url: newEntryUrl};
+    let newWatchlist = oldWatchList;
 
-    console.log('updateWatchlist new entry: ', newEntry);
-    console.log('updateWatchlist old list: ', savedArticlesList);
-    savedArticlesList.push(newEntry);
+    newWatchlist.push(newEntry);
 
-    console.log('updateWatchlist new list: ', savedArticlesList);
-    callback(savedArticlesList, manageStorage);
+    chrome.storage.sync.set({watchList: newWatchlist}, function(){
+    });
 };
-
-// Set new array of articles to storage
-function setWatchlist(newWatchlist, callback){
-
-    console.log('setWatchlist newWatchlist: ', newWatchlist);
-    console.log(callback);
-
-    // Remove old watchlist from storage.sync
-    callback('clear', 'dummyTitle', 'dummyUrl', newWatchlist, callbackDummy);
-};
-
-function callbackDummy(){
-
-    return true;
-}
 
 // Display error message on console
 function displayError(message){
@@ -257,10 +241,10 @@ module.exports = {
     fetchResults: fetchResults,
     displayResults: displayResults,
     insertResult: insertResult,
-    assignSaveButtons: assignSaveButtons,
     saveArticle: saveArticle,
-    updateWatchlist: updateWatchlist,
-    setWatchlist: setWatchlist,
-    manageStorage: manageStorage,
+    assignSaveButtons: assignSaveButtons,
+    assignSaveListeners: assignSaveListeners,
+    clearStorage: clearStorage,
+    updateStorage: updateStorage,
     displayError: displayError
 };
