@@ -22,7 +22,7 @@ function receiveMessage(request, fetchCallback, wrapperCallback){
         
         fetchCallback(selection);
 
-    }if(request.message == "insertWrapper"){
+    }else if(request.message == "insertWrapper"){
 
         wrapperCallback(main);
     }
@@ -116,7 +116,7 @@ function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError)
             let results = data.query.search;
 
             // Call function to display results with results variable as argument
-            displayResults(results, insertResult, saveArticle);
+            callbackDisplayResults(results, insertResult, saveArticle);
         }else{
 
             // Display error when no results were found
