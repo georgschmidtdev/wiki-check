@@ -1,6 +1,13 @@
 let chrome = require('sinon-chrome/extensions');
 window.chrome = chrome;
 
+function getRndInteger(){
+
+    let rndInt = Math.floor((Math.random() * 10) + 1);
+
+    return rndInt;
+}
+
 beforeEach(() => {
 
     jest.resetModules();
@@ -114,8 +121,6 @@ describe('Function clearResults', () => {
 describe('Function main', () => {
 
     const main = require('../contentScript').main;
-
-    
 
     document.body.innerHTML = `
     
@@ -332,193 +337,98 @@ describe('Function saveArticle', () => {
 
     const saveArticle = require('../contentScript').saveArticle;
 
-    mockCbAssign = jest.fn().mockImplementation(() => {
+    mockAssignSaveButtons = jest.fn().mockImplementation(() => {
 
-        document.body.innerHTML = `
-        
-        <section id="searchResults"></section>
-        `;
+        let buttons = document.querySelectorAll('.saveArticle');
+
+        return buttons;
+    });
+
+    mockAssignSaveListeners = jest.fn();
+
+    document.body.innerHTML = `
+    
+        <div id="resultWrapper">
+            <section id="searchResults">
+            
+            </section>
+        </div>
+    `;
+
+    it('should call assignSaveButtons for all buttons', () => {
+
+        let rndInt = getRndInteger();
 
         let wrapper = document.getElementById('searchResults');
 
-        for (let index = 0; index < rndInteger + 1; index++) {
-        
-            wrapper.insertAdjacentHTML('beforeend', `
+        wrapper.innerHTML = ``;
+
+        for (let index = 0; index < rndInt + 1; index++) {
             
-            <button class="saveArticle" name="mockTitle" type="click" value="mockUrl">&#128190;</button>    
+            wrapper.insertAdjacentHTML('beforeend', `
+
+                <button class="saveArticle" name="mockName" type="click" value="mockUrl">&#128190;</button>    
             `);
         };
 
-        return(document.querySelectorAll('.saveArticle'));
+        saveArticle(mockAssignSaveButtons, mockAssignSaveListeners);
+
+        expect(mockAssignSaveButtons).toHaveBeenCalled();
     });
 
-    mockCbManage = jest.fn();
+    it('should call assignSaveListener for all buttons', () => {
 
-    let rndInteger = Math.floor(Math.random() * 10) + 1;
-
-    it('should get array from callback function', () => {
-
-        saveArticle(mockCbAssign, mockCbManage);
-
-        expect(mockCbAssign).toHaveBeenCalled();
-
-        expect(mockCbManage).toHaveBeenCalled();
-    });
-});
-
-describe('Function assignSaveButtons', () => {
-
-    const assignSaveButtons = require('../contentScript').assignSaveButtons;
-
-    let rndInteger = Math.floor(Math.random() * 10) + 1;
-
-    it('should assign all buttons to saveButton object', () => {
-
-        document.body.innerHTML = `
-        
-        <section id="searchResults"></section>
-        `;
+        let rndInt = getRndInteger();
 
         let wrapper = document.getElementById('searchResults');
 
-        for (let index = 0; index < rndInteger + 1; index++) {
-        
-            wrapper.insertAdjacentHTML('beforeend', `
+        wrapper.innerHTML = ``;
+
+        for (let index = 0; index < rndInt + 1; index++) {
             
-            <button class="saveArticle" name="mockTitle" type="click" value="mockUrl">&#128190;</button>    
+            wrapper.insertAdjacentHTML('beforeend', `
+
+                <button class="saveArticle" name="mockName" type="click" value="mockUrl">&#128190;</button>    
             `);
         };
 
-        let result = assignSaveButtons();
+        saveArticle(mockAssignSaveButtons, mockAssignSaveListeners);
 
-        expect(result.length).toBe(rndInteger +1);
+        expect(mockAssignSaveListeners).toHaveBeenCalledTimes(rndInt + 1);
     });
 });
 
-describe('Function updateWatchlist', () => {
+describe('Function asssignSaveButtons', () => {
 
-    const updateWatchlist = require('../contentScript').updateWatchlist;
+    const asssignSaveButtons = require('../contentScript').assignSaveButtons;
 
-    const mockCallback = jest.fn().mockImplementation((list) => {
+    document.body.innerHTML = `
+    
+        <div id="resultWrapper">
+            <section id="searchResults">
+            
+            </section>
+        </div>
+    `;
 
-        return list;
-    });
+    it('should return with all buttons', () => {
 
-    let newMockTitle = 'mockTitle';
+        let rndInt = getRndInteger();
 
-    let newMockUrl = 'www.mock.com';
+        let wrapper = document.getElementById('searchResults');
 
-    it('should call setWatchlist', () => {
+        wrapper.innerHTML = ``;
 
-        let mockList = [
-            {
-                title: 'First title',
-                url: 'www.first.com'
-            },
-            {
-                title: 'Second title#',
-                url: 'www.second.com'
-            }
-        ];
+        for (let index = 0; index < rndInt + 1; index++) {
+            
+            wrapper.insertAdjacentHTML('beforeend', `
 
-        updateWatchlist(mockList, newMockTitle, newMockUrl, mockCallback);
+                <button class="saveArticle" name="mockName" type="click" value="mockUrl">&#128190;</button>    
+            `);
+        };
 
-        expect(mockCallback).toHaveBeenCalled();
-    });
-});
+        let result = asssignSaveButtons();
 
-describe('Function setWatchlist', () => {
-
-    const setWatchlist = require('../contentScript').setWatchlist;
-
-    mockCallback = jest.fn().mockImplementation(() => {
-
-        return true;
-    });
-
-    it('should write new watchlist', () => {
-
-        let newWatchlist = [
-            {
-                title: 'First title',
-                url: 'www.first.com'
-            },
-            {
-                title: 'Second title',
-                url: 'www.second.com'
-            },
-            {
-                title: 'Third title',
-                url: 'www.third.com'
-            }
-        ];
-
-        setWatchlist(newWatchlist, mockCallback);
-
-        expect(mockCallback).toHaveBeenCalledTimes(2);
-    });
-});
-
-describe('Function manageStorage', () => {
-
-    const manageStorage = require('../contentScript').manageStorage;
-
-    testCallback = jest.fn().mockImplementation((message) => {
-
-        return message;
-    });
-
-    chrome.storage.sync.clear = jest.fn().mockImplementation(() => {
-
-        return true;
-    });
-
-    chrome.storage.sync.set = jest.fn().mockImplementation((list) => {
-
-        return true;
-    });
-
-    let mockList = [
-        {
-            title: 'First title',
-            url: 'www.first.com'
-        },
-        {
-            title: 'Second title',
-            url: 'www.second.com'
-        }
-    ];
-
-    let newMockList = [
-        {
-            title: 'First title',
-            url: 'www.first.com'
-        },
-        {
-            title: 'Second title',
-            url: 'www.second.com'
-        },
-        {
-            title: 'Third title',
-            url: 'www.third.com'
-        }
-    ];
-
-    it('should clear storage list', () => {
-
-        clearMessage = 'clear';
-
-        manageStorage(clearMessage, newMockList, testCallback);
-
-        expect(testCallback).toHaveBeenCalledWith(clearMessage);
-    });
-
-    it('should write new list to storage', () => {
-
-        fillMessage = 'fill';
-
-        manageStorage(fillMessage, newMockList, testCallback);
-
-        expect(testCallback).toHaveBeenCalledWith(fillMessage);
+        expect(result.length).toBe(rndInt + 1);
     });
 });
