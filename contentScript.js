@@ -59,11 +59,11 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
-    // Add event listener with function to run when submitting
-    form.addEventListener('submit', handleSubmit);
-
     // Assign Button to variable for use with selected Text
     let clearSearch = document.getElementById("clearSearch");
+
+    // Add event listener with function to run when submitting
+    form.addEventListener('submit', handleSubmit);
 
     // Listen for click of button and search for selected Text
     clearSearch.addEventListener('click', clearResults);
