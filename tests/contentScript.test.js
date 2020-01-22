@@ -572,8 +572,6 @@ describe('Function updateStorage', () => {
         return result;
     });
 
-    
-
     global.chrome = {
         storage: {
             sync: {

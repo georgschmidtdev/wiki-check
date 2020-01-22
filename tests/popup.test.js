@@ -41,6 +41,8 @@ describe('Function displayArticles', () => {
 
     const displayArticles = require('../popup').displayArticles;
 
+    mockInsertArticle = jest.fn();
+
     document.body.innerHTML = `
     
         <div id="watchList">
@@ -52,14 +54,58 @@ describe('Function displayArticles', () => {
 
     let result = {
         watchList: [
-            {
-                title: "mockTitle",
-                url: "mockUrl"
-            }
+            
         ]
     };
 
-    it('should ', () => {
+    it('should call insertArticle for each Article in storage', () => {
 
+        let rndInt = getRndInteger();
+
+        let mockEntry = {
+            title: "mockTitle",
+            url: "mockUrl"
+        };
+
+        for (let index = 0; index < rndInt + 1; index++) {
+            
+            result.watchList.push(mockEntry);
+        };
+
+        displayArticles(result, mockInsertArticle);
+
+        expect(mockInsertArticle).toHaveBeenCalledTimes(rndInt + 1);
+    });
+});
+
+describe('Function insertArticle', () => {
+
+    const insertArticle = require('../popup').insertArticle;
+
+    document.body.innerHTML = ``;
+
+    document.body.innerHTML = `
+    
+        <div id="watchList">
+            <img src="images/ameisenbaer-transparent.png" alt="Ameisenbaer Icon">
+            <h1>Your saved articles</h1>
+            <ul id="watchListWrapper"></ul>
+        </div>
+    `;
+
+    it('should insert Article into DOM', () => {
+
+        let mockArticle = {
+            title: "mockTitle",
+            url: "mockUrl"
+        };
+
+        insertArticle(mockArticle);
+
+        let wrapper = document.getElementById('watchListWrapper');
+
+        expect(wrapper.innerHTML).toMatch(new RegExp(mockArticle.title));
+
+        expect(wrapper.innerHTML).toMatch(new RegExp(mockArticle.url));
     });
 });
