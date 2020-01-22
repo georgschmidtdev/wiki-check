@@ -59,18 +59,14 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
-    let submitEvent = 'submit';
-
-    let clickEvent = 'click';
-
     // Add event listener with function to run when submitting
-    form.addEventListener(submitEvent, handleSubmit);
+    form.addEventListener('submit', handleSubmit);
 
     // Assign Button to variable for use with selected Text
     let clearSearch = document.getElementById("clearSearch");
 
     // Listen for click of button and search for selected Text
-    clearSearch.addEventListener(clickEvent, clearResults);
+    clearSearch.addEventListener('click', clearResults);
 };
 
 // Callback function to submit event of search button
