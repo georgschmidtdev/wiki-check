@@ -68,3 +68,9 @@ function sendMessage(tabId, type){
     
     chrome.tabs.sendMessage(tabId, {message: type});
 };
+
+module.exports = {
+
+    createContextMenu: createContextMenu,
+    sendMessage: sendMessage
+};
