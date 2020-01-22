@@ -30,7 +30,7 @@ chrome.webNavigation.onCompleted.addListener(function(){
         if(tab){
             tabId = tab[0].id;
 
-            sendMessage(tabId, "insertWrapper");
+            sendMsg(tabId, "insertWrapper");
         };
     });
 });
@@ -47,7 +47,7 @@ chrome.contextMenus.onClicked.addListener(function(){
         if(tab){
             tabId = tab[0].id;
 
-            sendMessage(tabId, "contextSearch");
+            sendMsg(tabId, "contextSearch");
         };
     }); 
 });
@@ -62,7 +62,7 @@ function createContextMenu(title) {
 };
 
 // Send message to content script
-function sendMessage(tabId, type){
+function sendMsg(tabId, type){
     
     chrome.tabs.sendMessage(tabId, {message: type});
 };
@@ -70,5 +70,5 @@ function sendMessage(tabId, type){
 module.exports = {
 
     createContextMenu: createContextMenu,
-    sendMessage: sendMessage
+    sendMsg: sendMsg
 };
