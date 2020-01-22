@@ -439,8 +439,6 @@ describe('Function assignSaveListeners', () => {
 
     mockClearStorage = jest.fn();
 
-    
-
     it('should call clearStorage with new entry', () => {
 
         let mockButton = {
@@ -460,5 +458,159 @@ describe('Function assignSaveListeners', () => {
         assignSaveListeners(mockButton, mockClearStorage);
 
         expect(mockClearStorage).toHaveBeenCalled();
+    });
+});
+
+describe('Function clearStorage', () => {
+
+    const clearStorage = require('../contentScript').clearStorage;
+
+    mockUpdateStorage = jest.fn();
+
+    clear = jest.fn().mockImplementation(() => {
+
+        mockUpdateStorage();
+    });
+
+    set = jest.fn().mockImplementation((newWatchList) => {
+
+        return newWatchList;
+    });
+
+    get = jest.fn().mockImplementation(() => {
+
+        let result = {
+            watchList: [
+                {
+                    title: "mockTitle",
+                    url: "mockUrl"
+                }
+            ]
+        };
+
+        clear();
+
+        return result;
+    });
+
+    
+
+    global.chrome = {
+        storage: {
+            sync: {
+                get,
+                clear,
+                set
+            }
+        }
+    };
+
+    it('should get current content from storage', () => {
+
+        let mockEntry = {
+            title: "newMockTitle",
+            url: "newMockUrl"
+        };
+
+        clearStorage(mockEntry, mockUpdateStorage);
+
+        expect(get).toHaveBeenCalled();
+    });
+
+    it('should clear storage', () => {
+
+        let mockEntry = {
+            title: "newMockTitle",
+            url: "newMockUrl"
+        };
+
+        clearStorage(mockEntry, mockUpdateStorage);
+
+        expect(clear).toHaveBeenCalled();
+    }); 
+
+    it('should call updateStorage', () => {
+
+        let mockEntry = {
+            title: "newMockTitle",
+            url: "newMockUrl"
+        };
+
+        clearStorage(mockEntry, mockUpdateStorage);
+
+        expect(mockUpdateStorage).toHaveBeenCalled();
+    });
+});
+
+describe('Function updateStorage', () => {
+
+    const updateStorage = require('../contentScript').updateStorage;
+
+    clear = jest.fn().mockImplementation(() => {
+
+        mockUpdateStorage();
+    });
+
+    set = jest.fn().mockImplementation((newWatchList) => {
+
+        return newWatchList;
+    });
+
+    get = jest.fn().mockImplementation(() => {
+
+        let result = {
+            watchList: [
+                {
+                    title: "mockTitle",
+                    url: "mockUrl"
+                }
+            ]
+        };
+
+        clear();
+
+        return result;
+    });
+
+    
+
+    global.chrome = {
+        storage: {
+            sync: {
+                get,
+                clear,
+                set
+            }
+        }
+    };
+
+    it('should set new watchlist to storage', () => {
+
+        let oldMockList = [
+            {
+                title: "mockTitle",
+                url: "mockUrl"
+            }
+        ];
+
+        let mockEntry = {
+            title: "newMockTitle",
+            url: "newMockUrl"
+        };
+
+        let newMockList = {
+            watchList: [
+                {
+                    title: "mockTitle",
+                    url: "mockUrl"
+                }
+            ]
+        }
+
+        newMockList.watchList.push(mockEntry);
+
+        updateStorage(oldMockList, mockEntry);
+
+        expect(set).toHaveReturnedWith(newMockList);
     });
 });
