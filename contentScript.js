@@ -143,7 +143,6 @@ function displayResults(results, callbackInsertResult, callbackSaveArticle){
     });
 
     callbackSaveArticle(assignSaveButtons, assignSaveListeners);
-    console.log('called saveArticles');
 };
 
 function insertResult(result, wrapper){
@@ -201,7 +200,7 @@ function clearStorage(newEntry, updateCallback){
 
     chrome.storage.sync.get('watchList', function(result){
 
-        oldWatchList = result.watchList;       
+        oldWatchList = result.watchList;      
         
         chrome.storage.sync.clear(function(){
 
