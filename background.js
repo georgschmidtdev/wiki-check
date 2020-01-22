@@ -4,8 +4,6 @@ chrome.runtime.onInstalled.addListener(function() {
     // Create empty array and set to storage.sync
     let savedArticlesList = [];
     chrome.storage.sync.set({watchList: savedArticlesList}, function(){
-        console.log('Article watchlist created');
-        console.log(savedArticlesList);
     });
 
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -20,7 +18,13 @@ chrome.runtime.onInstalled.addListener(function() {
 // Create entry in context menu for chrome
 chrome.runtime.onInstalled.addListener(function() {
 
-        createContextMenu("Search on Wikipedia");
+    let newContextEntry = {
+        id: "contextMenu",
+        title: "Search '%s' on Wikipedia",
+        contexts: ["selection"]
+    };
+
+        createContextMenu(newContextEntry);
 });
 
 chrome.webNavigation.onCompleted.addListener(function(){
@@ -33,9 +37,9 @@ chrome.webNavigation.onCompleted.addListener(function(){
             tabId = tab[0].id;
 
             sendMessage(tabId, "insertWrapper");
-        }
-    })
-})
+        };
+    });
+});
 
 // Listen for click of context menu
 chrome.contextMenus.onClicked.addListener(function(){
@@ -50,22 +54,27 @@ chrome.contextMenus.onClicked.addListener(function(){
             tabId = tab[0].id;
 
             sendMessage(tabId, "contextSearch");
-        }
-    })    
+        };
+    }); 
 });
 
 // Create context menu functionality
-function createContextMenu(title) {
+function createContextMenu(newContextEntry) {
     chrome.contextMenus.create({
-        "id": "contextMenu",
-        "title": title,
-        "contexts": ["selection"]
+        "id": newContextEntry.id,
+        "title": newContextEntry.title,
+        "contexts": newContextEntry.contexts
     });
-}
+};
 
 // Send message to content script
 function sendMessage(tabId, type){
     
-    chrome.tabs.sendMessage(tabId, {message: type}, function(response){
-    });
-}
+    chrome.tabs.sendMessage(tabId, {message: type});
+};
+
+module.exports = {
+
+    createContextMenu: createContextMenu,
+    sendMessage: sendMessage
+};

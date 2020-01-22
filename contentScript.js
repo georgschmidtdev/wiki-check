@@ -5,36 +5,29 @@ let selection = "";
 document.addEventListener('selectionchange', () => {
 
     selection = document.getSelection().toString();
-})
+});
 
 // Listen for message from background script
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+chrome.runtime.onMessage.addListener(function(request){
 
     // Call function to handle reaction to message
-    receiveMessage(request, sender, sendResponse);
-})
-
-
-//--------------------------------------------------------------------------------
-// FUNCTIONS
+    receiveMessage(request, fetchResults, insertWrapper);
+});
 
 //Handle functionality after receiving message from background script
-function receiveMessage(request, sender, sendResponse){
+function receiveMessage(request, fetchCallback, wrapperCallback){
 
     /* Search for selected Text if message contains keyword */
     if(request.message == "contextSearch"){
         
-        sendResponse({message: "Context Menu search started"});
+        fetchCallback(selection);
 
-        fetchResults(selection);
     }if(request.message == "insertWrapper"){
 
-        sendResponse({message: "Wrapper inserted"});
-
-        insertWrapper(main);
+        wrapperCallback(main);
     }
     return true;
-}
+};
 
 // Insert searchbar on beginning of body element, followed by div to display results of search
 function insertWrapper(callback) {
@@ -58,7 +51,7 @@ function insertWrapper(callback) {
     `);
 
     callback();
-}
+};
 
 function main(){
     // THIS PART NEEDS TO RUN -AFTER- THE SEARCHBAR IS INJECTED TO WORK
@@ -66,39 +59,44 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
-    // Add event listener with function to run when submitting
-    form.addEventListener('submit', handleSubmit);
-
-
-    // Callback function to submit event of search button
-    function handleSubmit(event){
-
-        // Prevent tab from reloading as default action on submit
-        event.preventDefault();
-
-        // Store input of input field in variable
-        let searchInput = document.getElementById('searchFormInput').value;
-
-        // Remove white space from input
-        let searchQuery = searchInput.trim();
-
-        // Call function to search Wikipedia for search input
-        fetchResults(searchQuery);
-    }
-
     // Assign Button to variable for use with selected Text
     let clearSearch = document.getElementById("clearSearch");
 
+    let submitEvent = 'submit';
+
+    let clickEvent = 'click';
+
+    // Add event listener with function to run when submitting
+    form.addEventListener(submitEvent, handleSubmit);
+
     // Listen for click of button and search for selected Text
-    clearSearch.addEventListener("click", () => {
+    clearSearch.addEventListener(clickEvent, clearResults);
+};
 
-        // Assign div for results to variable
-        let searchResults = document.getElementById('searchResults');
+// Callback function to submit event of search button
+function handleSubmit(event){
 
-        // Clear content of div before displaying results
-        searchResults.innerHTML = '';
-    });
-}
+    // Prevent tab from reloading as default action on submit
+    event.preventDefault();
+
+    // Store input of input field in variable
+    let searchInput = document.getElementById('searchFormInput').value;
+
+    // Remove white space from input
+    let searchQuery = searchInput.trim();
+
+    // Call function to search Wikipedia for search input
+    fetchResults(searchQuery, displayResults, displayError);
+};
+
+function clearResults() {
+    
+    // Assign div for results to variable
+    let searchResults = document.getElementById('searchResults');
+
+    // Clear content of div before displaying results
+    searchResults.innerHTML = '';
+};
 
 // Get JSON file from Wikipedia
 function fetchResults(searchQuery){
@@ -118,7 +116,7 @@ function fetchResults(searchQuery){
             let results = data.query.search;
 
             // Call function to display results with results variable as argument
-            displayResults(results, saveArticle);
+            displayResults(results, insertResult, saveArticle);
         }else{
 
             // Display error when no results were found
@@ -127,7 +125,7 @@ function fetchResults(searchQuery){
     })
     // Show error message in console if fetch fails
     .catch(() => displayError('An error occurred'));
-}
+};
 
 // Output search results from JSON response
 function displayResults(results, callback){
@@ -141,69 +139,85 @@ function displayResults(results, callback){
     // Loop over each result
     results.forEach(result => {
 
-        // Encode the title key of each result to get valid URL by turning spaces into %20
-        let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
+        callbackInsertResult(result, searchResults);
+    });
 
-        // Insert HTML for each search result
-        searchResults.insertAdjacentHTML('beforeend',`
+    callbackSaveArticle(assignSaveButtons, assignSaveListeners);
+};
+
+function insertResult(result, wrapper){
+
+    // Encode the title key of each result to get valid URL by turning spaces into %20
+    let url = encodeURI(`https://de.wikipedia.org/wiki/${result.title}`);
+
+    // Insert HTML for each search result
+    wrapper.insertAdjacentHTML('beforeend', `
+    
+        <div class="resultItem>
+            <h2 class="resultTitle">
+            <button class="saveArticle" name="${result.title}" type="click" value="${url}">&#128190;</button>    
+            <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
+            </h2>
+            <span class="resultSnippet">${result.snippet}</span><br>
+            <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
+        </div><br>
+    `);
+};
+
+function saveArticle(assignButtonsCallback, listenerCallback){
+
+    let saveButtons = assignButtonsCallback();
+
+    saveButtons.forEach(function(button){
+
+        listenerCallback(button, clearStorage);
+    });
+};
+
+function assignSaveButtons(){
+
+    let buttons = document.querySelectorAll('.saveArticle');
+
+    return(buttons);
+};
+
+function assignSaveListeners(button, clearCallback){
+
+    button.addEventListener('click', () => {
+
+        let newEntry = {
+            title: button.name,
+            url: button.value
+        }
+
+        clearCallback(newEntry, updateStorage);
+    });
+}
+
+function clearStorage(newEntry, updateCallback){
+
+    let oldWatchList;
+
+    chrome.storage.sync.get('watchList', function(result){
+
+        oldWatchList = result.watchList;      
         
-            <div class="resultItem>
-                <h2 class="resultTitle">
-                <button class="saveArticle" name="${result.title}" type="click" value="${url}">&#128190;</button>    
-                <a href="${url}" target="_blank" rel="noopener">${result.title}</a><br>
-                </h2>
-                <span class="resultSnippet">${result.snippet}</span><br>
-                <a href="${url}" class="resultLink" target="_blank" rel="noopener">${url}</a>
-            </div><br>
-        `);
+        chrome.storage.sync.clear(function(){
+
+            updateCallback(oldWatchList, newEntry);
+       });
     });
-    callback();
-}
+};
 
-// Save article to watchlist
-function saveArticle() {
+function updateStorage(oldWatchList, newEntry){
 
-    // Assign buttons in result wrapper to array
-    let saveButton = document.querySelectorAll('.saveArticle');
+    let newWatchlist = oldWatchList;
 
-    // Listen for button click
-    saveButton.forEach(function(button){
+    newWatchlist.push(newEntry);
 
-        button.addEventListener("click", () => { 
-
-            let title = button.name;
-            let url = button.value;
-
-            // Get current watchlist from storage
-            chrome.storage.sync.get('watchList', function(result){
-
-                updateWatchlist(result.watchList, title, url);                    
-            });
-        });
-    });
-}
-
-// Save buttons value and name as new object in storage
-function updateWatchlist(savedArticlesList, newEntryTitle, newEntryUrl){
-
-    console.log(savedArticlesList);
-
-    let newEntry = {title: newEntryTitle, url: newEntryUrl};
-    savedArticlesList.push(newEntry);
-    setWatchlist(savedArticlesList);
-}
-
-// Set new array of articles to storage
-function setWatchlist(newWatchlist){
-
-    // Remove old watchlist from storage.sync
-    chrome.storage.sync.clear(function(){
-    });
-
-    // Set new array
     chrome.storage.sync.set({watchList: newWatchlist}, function(){
     });
-}
+};
 
 // Display error message on console
 function displayError(message){
@@ -215,6 +229,21 @@ function displayError(message){
 
         <h3 class="errorMessage">${message}</h3> 
     `);
-}
+};
 
-//module.exports = contentScript;
+module.exports = {
+    receiveMessage: receiveMessage,
+    insertWrapper: insertWrapper,
+    main: main,
+    handleSubmit: handleSubmit,
+    clearResults: clearResults,
+    fetchResults: fetchResults,
+    displayResults: displayResults,
+    insertResult: insertResult,
+    saveArticle: saveArticle,
+    assignSaveButtons: assignSaveButtons,
+    assignSaveListeners: assignSaveListeners,
+    clearStorage: clearStorage,
+    updateStorage: updateStorage,
+    displayError: displayError
+};
