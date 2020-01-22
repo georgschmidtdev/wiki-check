@@ -432,3 +432,33 @@ describe('Function asssignSaveButtons', () => {
         expect(result.length).toBe(rndInt + 1);
     });
 });
+
+describe('Function assignSaveListeners', () => {
+
+    const assignSaveListeners = require('../contentScript').assignSaveListeners;
+
+    mockClearStorage = jest.fn();
+
+    
+
+    it('should call clearStorage with new entry', () => {
+
+        let mockButton = {
+            name: "mockName",
+            value: "mockUrl",
+            addEventListener: jest.fn().mockImplementation(() => {
+
+                let newEntry = {
+                    title: mockButton.name,
+                    url: mockButton.value
+                };
+        
+                mockClearStorage(newEntry);
+            })
+        };
+
+        assignSaveListeners(mockButton, mockClearStorage);
+
+        expect(mockClearStorage).toHaveBeenCalled();
+    });
+});
