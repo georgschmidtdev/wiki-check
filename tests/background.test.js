@@ -8,7 +8,10 @@ beforeEach(() => {
 
 describe('background', () => {
 
+    it('should ', () => {
 
+        
+    });
 });
 
 describe('Function createContexMenu', () => {

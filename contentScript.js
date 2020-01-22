@@ -59,15 +59,15 @@ function main(){
     // Assign search field to variable
     let form = document.getElementById('searchForm');
 
-    // Assign Button to variable for use with selected Text
-    let clearSearch = document.getElementById("clearSearch");
-
     let submitEvent = 'submit';
 
     let clickEvent = 'click';
 
     // Add event listener with function to run when submitting
     form.addEventListener(submitEvent, handleSubmit);
+
+    // Assign Button to variable for use with selected Text
+    let clearSearch = document.getElementById("clearSearch");
 
     // Listen for click of button and search for selected Text
     clearSearch.addEventListener(clickEvent, clearResults);
@@ -99,7 +99,7 @@ function clearResults() {
 };
 
 // Get JSON file from Wikipedia
-function fetchResults(searchQuery){
+function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError){
     
     // Limit number of results with "limit=<numberOfResults>&srsearch"
     let endpoint = `https://de.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=6&srsearch=${searchQuery}`;
@@ -120,7 +120,7 @@ function fetchResults(searchQuery){
         }else{
 
             // Display error when no results were found
-            displayError('No results found');
+            callbackDisplayError('No results found');
         }
     })
     // Show error message in console if fetch fails
@@ -128,7 +128,7 @@ function fetchResults(searchQuery){
 };
 
 // Output search results from JSON response
-function displayResults(results, callback){
+function displayResults(results, callbackInsertResult, callbackSaveArticle){
 
     // Assign div for results to variable
     let searchResults = document.getElementById('searchResults');
@@ -226,7 +226,6 @@ function displayError(message){
     searchResults.innerHTML = '';
 
     searchResults.insertAdjacentHTML('beforeend',`
-
         <h3 class="errorMessage">${message}</h3> 
     `);
 };

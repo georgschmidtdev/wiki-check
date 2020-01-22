@@ -18,13 +18,7 @@ chrome.runtime.onInstalled.addListener(function() {
 // Create entry in context menu for chrome
 chrome.runtime.onInstalled.addListener(function() {
 
-    let newContextEntry = {
-        id: "contextMenu",
-        title: "Search '%s' on Wikipedia",
-        contexts: ["selection"]
-    };
-
-        createContextMenu(newContextEntry);
+        createContextMenu("Search %s on Wikipedia");
 });
 
 chrome.webNavigation.onCompleted.addListener(function(){
@@ -59,11 +53,11 @@ chrome.contextMenus.onClicked.addListener(function(){
 });
 
 // Create context menu functionality
-function createContextMenu(newContextEntry) {
+function createContextMenu(title) {
     chrome.contextMenus.create({
-        "id": newContextEntry.id,
-        "title": newContextEntry.title,
-        "contexts": newContextEntry.contexts
+        "id": "contextMenu",
+        "title": title,
+        "contexts": ["selection"]
     });
 };
 
