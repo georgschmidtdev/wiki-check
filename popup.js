@@ -1,33 +1,52 @@
 // Listen for changes to storage.sync
 chrome.storage.onChanged.addListener(function(){
 
-    displayWatchList();
+    getWatchList(displayArticles);
 });
 
-window.onload = displayWatchList();
+window.onload = getWatchList(displayArticles);
 
-function displayWatchList(){
+function getWatchList(displayCallback){
+
+    // Get content from storage.sync
+    chrome.storage.sync.get('watchList', function(result){
+       
+        displayCallback(result, insertArticle);
+    });
+};
+
+function displayArticles(result, insertCallback){
 
     // Assign HTML wrapper of watchlist to variable
     let watchListWrapper = document.getElementById('watchListWrapper');
 
-    // Get content from storage.sync
-    chrome.storage.sync.get('watchList', function(result){
+    let articleWatchlist = result.watchList;
 
-        let articleWatchlist = result.watchList;
+    // Clear current list of saved articles then write new list entries
+    watchListWrapper.innerHTML = '';
 
-        // Clear current list of saved articles then write new list entries
-        watchListWrapper.innerHTML = '';
+    articleWatchlist.forEach(function(article){
 
-        articleWatchlist.forEach(function(article){
-
-        console.log(articleWatchlist);
-        
-        watchListWrapper.insertAdjacentHTML('afterbegin', `
-            <li class="watchListItems">
-                <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
-            </li>
-        `);
-        });
+            insertCallback(article);
     });
-}
+};
+
+function insertArticle(article){
+
+    // Assign HTML wrapper of watchlist to variable
+    let watchListWrapper = document.getElementById('watchListWrapper');
+
+    watchListWrapper.insertAdjacentHTML('afterbegin', `
+            
+        <li class="watchListItems">
+            <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
+        </li>
+    `);
+};
+
+module.exports = {
+
+    getWatchList: getWatchList,
+    displayArticles: displayArticles,
+    insertArticle: insertArticle
+};
