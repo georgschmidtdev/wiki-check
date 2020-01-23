@@ -20,7 +20,7 @@ function receiveMessage(request, fetchCallback, wrapperCallback){
     /* Search for selected Text if message contains keyword */
     if(request.message == "contextSearch"){
         
-        fetchCallback(selection);
+        fetchCallback(selection, displayResults, displayError);
 
     }else if(request.message == "insertWrapper"){
 
@@ -100,16 +100,20 @@ function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError)
     // Limit number of results with "limit=<numberOfResults>&srsearch"
     let endpoint = `https://de.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=6&srsearch=${searchQuery}`;
 
+    let results;
+
     fetch(endpoint)
     // Take response from Wikipedia and return as JSON file
-    .then(response => response.json())
+    .then(response => {
+        return response.json()
+    })
     .then(data => {
 
         // Make sure at least one result is available
         if(data.query.search.length != 0){
             
             // Assign search results wihing JSON file to variable
-            let results = data.query.search;
+            results = data.query.search;
 
             // Call function to display results with results variable as argument
             callbackDisplayResults(results, insertResult, saveArticle);
@@ -120,7 +124,7 @@ function fetchResults(searchQuery, callbackDisplayResults, callbackDisplayError)
         }
     })
     // Show error message in console if fetch fails
-    .catch(() => displayError('An error occurred'));
+    .catch((error) => displayError(error));
 };
 
 // Output search results from JSON response

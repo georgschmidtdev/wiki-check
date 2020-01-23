@@ -6,7 +6,7 @@ function getRndInteger(){
     let rndInt = Math.floor((Math.random() * 10) + 1);
 
     return rndInt;
-}
+};
 
 beforeEach(() => {
 

@@ -18,39 +18,34 @@ chrome.runtime.onInstalled.addListener(function() {
 // Create entry in context menu for chrome
 chrome.runtime.onInstalled.addListener(function() {
 
-        createContextMenu("Search %s on Wikipedia");
+    createContextMenu("Search %s on Wikipedia");
 });
 
+//Listen for website to load completely
 chrome.webNavigation.onCompleted.addListener(function(){
 
-    let tabId;
-    tab = chrome.tabs.query({active: true, currentWindow: true}, function(tab){
-
-        // Run function if variable "tab" is NOT null
-        if(tab){
-            tabId = tab[0].id;
-
-            sendMsg(tabId, "insertWrapper");
-        };
-    });
+    messageHandler("insertWrapper", sendMsg);
 });
 
 // Listen for click of context menu
 chrome.contextMenus.onClicked.addListener(function(){
 
-    // Assign currently active tab and its ID to variable
+    messageHandler("contextSearch", sendMsg);
+});
+
+function messageHandler(type, sendMessageCallback){
+
     let tabId;
-    let tab;
     tab = chrome.tabs.query({active: true, currentWindow: true}, function(tab){
 
         // Run function if variable "tab" is NOT null
         if(tab){
             tabId = tab[0].id;
 
-            sendMsg(tabId, "contextSearch");
+            sendMessageCallback(tabId, type);
         };
-    }); 
-});
+    });
+};
 
 // Create context menu functionality
 function createContextMenu(title) {
@@ -69,6 +64,7 @@ function sendMsg(tabId, type){
 
 module.exports = {
 
+    messageHandler: messageHandler,
     createContextMenu: createContextMenu,
     sendMsg: sendMsg
 };
